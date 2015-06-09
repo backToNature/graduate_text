@@ -1,0 +1,84 @@
+define(function (require, exports, module){
+	// 加载依赖模块
+	//alert("cc");
+	require('jquery');
+	require('bootstrap');
+	require('tooltip');
+	require('popover'); 
+
+	var city_select = { 
+			init: function () { 
+				$(function () {    
+					var cityTitle = "<div>" +
+										"<span id='hotcity' class='cityHover'>热门" +
+										"</span><br/>" +
+										"<span id='a_d'  class='cityHover'>ABCD</span>&nbsp;" +
+										"<span id='e_j'  class='cityHover'>EFGHJ</span>&nbsp;" +
+										"<span id='k_n'  class='cityHover'>KLMN</span>&nbsp;" +
+										"<span id='p_w'  class='cityHover'>PQRSTW</span>&nbsp;" +
+										"<span id='x_z'  class='cityHover'>XYZ</span>&nbsp;" +
+									"</div> ";
+					$("#hotcity").click(function(){
+						
+					});
+					var cityContent = "<div id='con_one_1' class='sug-city'>" +
+			 		"<span><a title='北京'" +
+			 		"	href='javascript:getSelectedCity('北京','bj','','','12')'>北京</a>" +
+			 		"</span><span><a title='上海'" +
+			 		"	href='javascript:getSelectedCity('上海','sh','','','13')'> " +
+			 		"上海</a></span><span><a" +
+			 		"title='广州'" +
+			 		"href='javascript:getSelectedCity('广州'," +
+			 		"'gz','','','16')'> 广州</a></span><span><a title='深圳' " +
+			 		"href='javascript:getSelectedCity('深圳','sz','','','17')'> 深圳</a></span>" +
+			 		"<span><a	title='西安'	href='javascript:getSelectedCity('西安','xa',''," +
+			 		"'','176')'>	西安</a></span><span class='city_width'><a title='郑州'" +
+			 		"	href='javascript:getSelectedCity('郑州','zz','','','103')'>" +
+			 		"郑州</a></span><span><a title='成都'" +
+			 		"	href='javascript:getSelectedCity('成都','cd','','','45')'>" +
+			 		"成都</a></span><span>" +
+			 		"	<a title='武汉'" +
+			 		"	href='javascript:getSelectedCity('武汉','wh','','','194')'>" +
+			 		"		武汉</a>" +
+			 		"	</span><span><a title='南京'" +
+			 		"	href='javascript:getSelectedCity('南京','nj','','','65')'> " +
+			 		"南京</a></span><span><a" +
+			 		"	title='重庆'	href='javascript:getSelectedCity(" +
+			 		"'重庆','cq','','','15')'>重庆</a></span><span><a" +
+			 		"		title='杭州'" +
+			 		"	href='javascript:getSelectedCity('杭州','hz','','','26')'>" +
+			 		"杭州</a></span>" +
+			 		"	<span class='city_width'><a title='大连'" +
+			 		"	href='javascript:getSelectedCity('大连','dl','','','56')'>" +
+			 		"大连</a></span><span><a" +
+			 		"	title='青岛'" +
+			 		"	href='javascript:getSelectedCity('青岛','qd','','','114')'>" +
+			 		"青岛</a></span><span><a	title='苏州'" +
+			 		"	href='javascript:getSelectedCity('苏州','su','','','67')'>" +
+			 		"苏州</a></span><span><a" +
+			 		"	title='三亚'" +
+			 		"	href='javascript:getSelectedCity('三亚','sanya','','','144')'" +
+			 		">三亚</a></span><span><a" +
+			 		"	title='厦门'" +
+			 		"	href='javascript:getSelectedCity('厦门','xm','','','76')'>" +
+			 		"厦门</a></span><span><a" +
+			 		"	title='昆明'" +
+			 		"	href='javascript:getSelectedCity('昆明','km','','','225')'>" +
+			 		"昆明</a></span><span" +
+			 		"	class='city_width'><a title='沈阳'" +
+			 		"	href='javascript:getSelectedCity('沈阳','sy','','','55')'>" +
+			 		"沈阳</a></span><span><a" +
+			 		"	title='无锡'" +
+			 		"	href='javascript:getSelectedCity('无锡','wx','','','66')'>" +
+			 		"无锡</a></span><span><a" +
+			 		"	title='香港'" +
+			 		"	href='javascript:getSelectedCity" +
+			 		"('香港','xianggang','','','344')'>香港</a></span>" +
+			 		"	</div>";
+					 $('[data-toggle="popover"]').popover({title:cityTitle,content:cityContent});
+				});  
+			} 
+	}; 
+	module.exports = city_select;
+});
+

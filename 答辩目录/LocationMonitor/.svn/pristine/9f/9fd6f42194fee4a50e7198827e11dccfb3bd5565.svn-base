@@ -1,0 +1,54 @@
+package com.swust.kelab.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.AlertConfig;
+import com.swust.kelab.model.CommonQuery;
+import com.swust.kelab.model.QueryData;
+import com.swust.kelab.repos.AlertConfigDAO;
+import com.swust.kelab.repos.bean.ListQuery;
+
+@Service("alertConfigService")
+public class AlertConfigService {
+	@Autowired
+	private AlertConfigDAO alertConfigDAO;
+	//增加一个告警设置
+	public int addOneAlertConfig(AlertConfig alertConfig){
+		return alertConfigDAO.addOneAlertConfig(alertConfig);
+	}
+	//删除一个告警设置
+	public int deleteOneAlertConfig(int alertConfigID) {
+		return alertConfigDAO.deleteOneAlertConfig(alertConfigID);
+	}
+	//查看当前用户的告警设置
+	public AlertConfig viewOneAlertConfig(int alertConfigID) {
+		return alertConfigDAO.viewOneAlertConfig(alertConfigID);
+	}
+	//分页查询
+//	public QueryData queryByPage(CommonQuery query, int userID) {
+//		QueryData result = new QueryData();
+//		List<AlertConfig> list = null;
+//		int totalPage = 0;
+//		ListQuery queryMap = query.format();
+//		queryMap.fill("userID", userID);
+//		
+//		return null;
+//	}
+	
+	/**
+	 * 查询当前用户所有的告警设置
+	 * @param userID
+	 * @return
+	 */
+	public List<AlertConfig> viewAllAlertConfig(int userID) {
+		return alertConfigDAO.viewAllAlertConfig(userID);
+	}
+	
+	
+	
+}

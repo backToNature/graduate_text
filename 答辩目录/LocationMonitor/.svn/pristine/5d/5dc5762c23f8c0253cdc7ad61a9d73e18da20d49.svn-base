@@ -1,0 +1,49 @@
+package com.swust.kelab.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.AlertData;
+import com.swust.kelab.domain.AlertViewData;
+import com.swust.kelab.repos.AlertDAO;
+
+
+@Service("alertService")
+public class AlertService {
+	@Autowired
+	private AlertDAO alertDAO;
+	AlertViewData alertViewData;
+	AlertData alertdata;
+	Date date;
+
+	public AlertViewData select(Date time) {
+		String strTime[] = null;
+		int series[] = null;
+		int series_resolved[] = null;
+		int series_n_resolve[] = null;
+		 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		for(int i=0;i<7;i++){
+			rightTime.add(Calendar.DAY_OF_YEAR, -i);
+			strTime[i] = sdf.format(rightTime.getTime());
+			date = rightTime.getTime();
+			series[i] = alertDAO.selectSeries(date);
+			series_resolved[i] =  alertDAO.selectSeries_resolved(date);
+			series_n_resolve[i] =  alertDAO.selectSeries_n_resolve(date);
+		}
+		alertdata.setTime(strTime); //得到时间数组
+		alertdata.setSeries(series);
+		alertdata.setSeries_resolved(series_resolved);
+		alertdata.setSeries_resolved(series_n_resolve);
+		alertViewData.setAlertdata(alertdata);
+		alertViewData.setStatus(alertDAO.selectStatus(date));
+		
+		return alertViewData;
+	}
+}

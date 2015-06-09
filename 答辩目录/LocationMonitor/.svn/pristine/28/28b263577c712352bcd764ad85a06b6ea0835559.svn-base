@@ -1,0 +1,169 @@
+package com.swust.kelab.repos;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.swust.kelab.domain.Alert;
+import com.swust.kelab.domain.AlertConfig;
+import com.swust.kelab.domain.IMEI;
+import com.swust.kelab.domain.IMSI;
+import com.swust.kelab.domain.Location;
+import com.swust.kelab.domain.LocationRaw;
+import com.swust.kelab.domain.ObjectInfo;
+
+@Repository("alertDAO")
+public class AlertDAO {
+
+	@Autowired
+	private SqlSession sqlSession;
+
+	public void setSqlSession(SqlSession sqlSession) {
+		this.sqlSession = sqlSession;
+	}
+
+	public Integer selectStatus(Date time) { // 没用到
+		HashMap<String, Date> map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, 1);
+		time0 = rightTime.getTime();
+		rightTime.add(Calendar.DAY_OF_YEAR, -7);
+		time = rightTime.getTime();
+		map.put("maxtime", time0);
+		map.put("mintime", time);
+
+		return this.sqlSession.selectOne("AlertMapper.selectStatus", map);
+	}
+
+	public Integer selectSeries(Date time) throws Exception {
+		HashMap<String, Date> map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, +1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time0);
+		map.put("mintime", time);
+		return this.sqlSession.selectOne("AlertMapper.selectSeries", map);
+	}
+
+	public Integer selectSeries_resolved(Date time) throws Exception {
+		HashMap<String, Date> map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, +1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time0);
+		map.put("mintime", time);
+		return this.sqlSession.selectOne("AlertMapper.series_resolved", map);
+	}
+
+	public Integer selectSeries_n_resolve(Date time) throws Exception {
+		HashMap<String, Date> map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, +1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time0);
+		map.put("mintime", time);
+		return this.sqlSession.selectOne("AlertMapper.series_n_resolve", map);
+	}
+
+	public Integer selectLocationNum(Date time) throws Exception {
+		HashMap<String, Date> map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, +1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time0);
+		map.put("mintime", time);
+		return this.sqlSession.selectOne("AlertMapper.selectLocationNum", map);
+	}
+
+	public List<AlertConfig> getListAlertConfig(LocationRaw item)
+			throws Exception {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("imei", item.getImei());
+		map.put("imsi", item.getImsi());
+		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");		
+		map.put("posTime", df.format(item.getPosTime()));
+		return this.sqlSession
+				.selectList("AlertMapper.getListAlertConfig", map);
+	}
+
+	public Integer getIMEIID(IMEI imei) throws Exception {
+		if (this.sqlSession.selectOne("AlertMapper.getIMEIID", imei) == null) {
+			return -1;
+		} else {
+			return this.sqlSession.selectOne("AlertMapper.getIMEIID", imei);
+		}
+	}
+
+	public Integer getIMSIID(IMSI imsi) throws Exception {
+		if (this.sqlSession.selectOne("AlertMapper.getIMSIID", imsi) == null) {
+			return -1;
+		} else {
+			return this.sqlSession.selectOne("AlertMapper.getIMSIID", imsi);
+		}
+	}
+
+	public Integer addOneIMEI(IMEI imei) throws Exception {
+		this.sqlSession.insert("AlertMapper.addOneIMEI", imei);
+		return imei.getImeiID();
+	}
+
+	public Integer addOneIMSI(IMSI imsi) throws Exception {
+		this.sqlSession.insert("AlertMapper.addOneIMSI", imsi);
+		return imsi.getImsiID();
+	}
+
+	public Integer addOneLocation(Location item) {
+		this.sqlSession.insert("AlertMapper.addOneLocation", item);
+		return item.getLocationID();
+	}
+
+	/**
+	 * 
+	 * @description 增加告警
+	 * @author libo
+	 * @date 2015年4月18日 下午6:43:30
+	 *
+	 * @param alert
+	 * @return
+	 */
+	public Integer add(Alert alert) {
+		return this.sqlSession.insert("AlertMapper.addAlert", alert);
+	}
+
+	public Integer addObjectInfo(ObjectInfo objectInfo) {
+		return this.sqlSession.insert("AlertMapper.addObjectInfo", objectInfo);
+	}
+
+	public Integer selectObjectInfo(ObjectInfo objectInfo) {
+		if (this.sqlSession.selectOne("AlertMapper.selectObjectInfo",
+				objectInfo) == null) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+
+	public List<IMEI> selectListIMEI() {
+		return this.sqlSession.selectList("AlertMapper.selectListIMEI");
+	}
+
+	public List<IMSI> selectListIMSI() {
+		return this.sqlSession.selectList("AlertMapper.selectListIMSI");
+	}
+}

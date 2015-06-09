@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AlertMapper">
+	<select id="selectStatus" parameterType="Map" resultType="Integer">
+		select count(*)
+		from alert
+		where PosTime>=#{mintime} and PosTime<![CDATA[<]]>#{maxtime}
+	</select>
+
+	<select id="selectSeries" parameterType="Map" resultType="Integer">
+		select count(*)
+		from alert
+		where PosTime>=#{mintime} and PosTime<![CDATA[<]]>#{maxtime}
+	</select>
+
+	<select id="series_resolved" parameterType="Map" resultType="Integer">
+		select count(*)
+		from alert
+		where AlertState=1 and PosTime>=#{mintime}
+		and PosTime<![CDATA[<]]>#{maxtime}
+	</select>
+
+	<select id="series_n_resolve" parameterType="Map" resultType="Integer">
+		select count(*)
+		from alert
+		where AlertState=0 and PosTime >= #{mintime}
+		and PosTime<![CDATA[<]]>#{maxtime}
+	</select>
+
+	<select id="selectLocationNum" parameterType="Map" resultType="Integer">
+		select count(*)
+		from location
+		where PosTime >= #{mintime} and PosTime<![CDATA[<]]>#{maxtime}
+	</select>
+
+
+	<select id="getIMEIID" parameterType="String" resultType="Integer">
+		select
+		IMEIID
+		from imei
+		where IMEI=#{imei}
+	</select>
+
+	<select id="getIMSIID" parameterType="String" resultType="Integer">
+		select
+		IMSIID
+		from imsi
+		where IMSI=#{imsi}
+	</select>
+
+	<insert id="addOneIMEI" parameterType="com.swust.kelab.domain.IMEI"
+		keyProperty="imeiID" useGeneratedKeys='true'>
+		insert into imei(IMEI)
+		values(#{imei})
+	</insert>
+
+	<insert id="addOneIMSI" parameterType="com.swust.kelab.domain.IMSI"
+		keyProperty="imsiID" useGeneratedKeys='true'>
+		insert into imsi(IMSI)
+		values(#{imsi})
+	</insert>
+
+	<insert id="addOneLocation" parameterType="com.swust.kelab.domain.Location"
+		keyProperty="locationID" useGeneratedKeys="true">
+		insert into
+		location(IMEIID,IMSIID,PosTime,Longitude,Latitude,LocType,TransferFlag,LongitudeBaidu,LatitudeBaidu,AreaID,SrcIP,DstIP,PhoneType,AppType)
+		values(#{imeiID},#{imsiID},#{posTime},#{longitude},#{latitude},#{locType},#{transferFlag},#{longitudeBaidu},#{latitudeBaidu},#{areaID},#{srcIP},#{dstIP},#{PhoneType},#{appType})
+	</insert>
+
+	<select id="getListAlertConfig" parameterType="com.swust.kelab.domain.LocationRaw"
+		resultType="com.swust.kelab.domain.AlertConfig">
+		select *
+		from alertconfig
+		where IMEI = #{imei} and IMSI = #{imsi} and ConfigTime<![CDATA[<=]]>#{posTime}
+	</select>
+
+	<insert id="addAlert" parameterType="com.swust.kelab.domain.Alert">
+		insert into
+		alert(AlertConfigID,LocationID,IMEI,IMSI,PosTime,LongitudeBaidu,LatitudeBaidu,AreaID,PhoneType,AppType,AlertState,PushState)
+		values(#{alertConfigID},#{locationID},#{imei},#{imsi},#{posTime},#{longitudeBaidu},#{latitudeBaidu},#{areaID},#{phoneType},#{appType},#{alertState},#{pushState})
+	</insert>
+	
+	<select id="selectObjectInfo" parameterType="com.swust.kelab.domain.ObjectInfo" resultType="com.swust.kelab.domain.ObjectInfo">
+	select * from objectinfo where IMEI_IMEIID=#{IMEI_IMEIID} and IMSI_IMSIID=#{IMSI_IMSIID}
+	</select>
+	
+	<insert id="addObjectInfo" parameterType="com.swust.kelab.domain.ObjectInfo">
+	insert into
+	objectInfo(IMEI_IMEIID,IMSI_IMSIID,ObjectName,ObjectPhone,ObjectIMSI,ObjectIMEI,DisplayName,Description,Identify)
+	values(#{IMEI_IMEIID},#{IMSI_IMSIID},#{objectName},#{objectPhone},#{objectIMSI},#{objectIMEI},#{displayName},#{description},#{identify})
+	</insert>
+	
+	<select id="selectListIMEI" resultType="com.swust.kelab.domain.IMEI">
+	select IMEIID as imeiID,
+	IMEI as imei
+	from imei 
+	limit 80,30
+	</select>
+	
+	<select id="selectListIMSI" resultType="com.swust.kelab.domain.IMSI">
+	select IMSIID as imsiID,
+	IMSI as imsi
+	from imsi 
+	limit 80,30
+	</select>
+
+</mapper>

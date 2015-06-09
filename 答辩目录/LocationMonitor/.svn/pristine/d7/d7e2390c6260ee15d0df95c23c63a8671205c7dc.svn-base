@@ -1,0 +1,38 @@
+package com.swust.kelab.web.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.swust.kelab.service.AlertService;
+import com.swust.kelab.web.json.JsonAndView;
+
+@Controller
+@RequestMapping("/selectAlert")
+
+public class AlertController {
+	@Autowired
+	private AlertService alertService;
+	@RequestMapping(value="/viewAlert",method=RequestMethod.GET)
+	public JsonAndView view (String strTime){
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date time = null;
+		try {
+			time = sdf.parse(strTime);
+			System.out.println(time);
+		} catch (ParseException e) {
+			System.out.println("日期格式出错：yyyy-MM-dd ");
+			e.printStackTrace();
+		}
+		JsonAndView jav = new JsonAndView();
+		jav.addData("AlertViewData", alertService.select(time));
+		jav.setRet(true);
+		return jav;
+		
+	}
+}

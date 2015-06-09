@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<title>首页</title>
+<link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all"
+	href="../lib/bootstrap/daterangepicker-bs3.css" />
+<link rel="stylesheet" href="../css/bootstrap-datetimepicker.min.css">
+
+<link rel="stylesheet" href="../css/param_setting.css">
+</head>
+<body>
+	<div class="globle_header map_header_wrapper">
+		<img class="globle_header_logo" src="../img/logo.png"> <span
+			class="globle_header_title">互联网应用作战指挥系统</span>
+		<ul class="globle_header_nav">
+			<!--common.js打印-->
+		</ul>
+	</div> 
+				 
+				
+			<!--  <div id="content"  >
+  
+    <label for="sysName">系统名修改：</label>
+    <input type="text"   id="sysName" placeholder="请输入系统名" class="form-control"/>
+  
+    <label for="sysPlace">区域修改：</label>
+    <select class="form-control" id="sysPlace">
+    	
+    </select>
+   
+    <label for="sysPassword">密码修改：</label>
+    <input type="password" class="form-control" id="sysPassword" placeholder="请输入密码">
+   
+ <button class="btn btn-primary btn-block">确定</button>
+
+ 	 
+	 </div>
+	 -->
+	 <div class="container">
+				<fieldset>
+					<legend> 系统设置 </legend>
+					<b>系统名称</b> <input style="width: 700px" type="text"
+						class="form-control" id="system_name" /> <br /> <b>区域位置</b> <input style="width: 700px" type="text" class="form-control"
+						id="unit_name" /> <br />
+						<b>每页显示信息数</b> <select
+						style="width: 700px" class="form-control" id="message_num">
+						<option>10</option>
+						<option>20</option>
+						<option>30</option>
+						<option>40</option>
+						<option>50</option>
+					</select> <br /> <b>时间格式</b> <select
+						style="width: 700px" class="form-control" id="message_num">
+						<option>yyyy/mm/dd</option>
+						<option>yyyy/dd/mm</option>
+						<option>dd/mm/yyyy</option> 
+					</select> <br /> <b>单位名称</b> <input
+						style="width: 700px" type="text" class="form-control"
+						id="unit_name" /> <br /> 
+						<b>新密码</b> <input
+						style="width: 700px" type="password" class="form-control"
+						id="unit_name" /><b style="color:red;"> *以上信息不输入即表示保持原始数据，不做修改</b><br />
+					<button   class="btn btn-primary" id="save" >保存</button>
+				</fieldset>
+			</div>
+	<div class="footer"></div>
+	<script src="../lib/seajs/sea-debug.js"></script>
+	<script>
+		// Set configuration
+		seajs.config({
+			base : '../lib/',
+			alias : {
+				jquery : 'jQuery/jquery.min.js',
+				bootstrap : 'bootstrap/bootstrap.min.js',
+				moment : 'bootstrap/moment.js',
+				daterangepicker : 'bootstrap/daterangepicker.js',
+				underscore : 'underscore/underscore.js',
+				backbone : 'backbone/backbone.js',
+				artTemplate : 'artTemplate/artTemplate.js',
+				highcharts : 'Highcharts-4.1.3/highcharts.js'
+			}
+		});
+		seajs.use('underscore');
+		// 入口  
+		seajs.use('../js/common.js');
+		seajs.use('../js/param_setting.js');
+	</script>
+</body>
+<link rel="stylesheet" href="../css/globle.css">
+</html>

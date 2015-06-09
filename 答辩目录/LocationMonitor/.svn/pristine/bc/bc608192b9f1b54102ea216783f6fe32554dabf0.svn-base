@@ -1,0 +1,40 @@
+package com.swust.kelab.repos;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.swust.kelab.domain.LocationSimple;
+import com.swust.kelab.model.ObjModel;
+
+@Repository("locationQueryDAO")
+public class LocationQueryDAO {
+	@Autowired
+	private SqlSession sqlSession;
+	public void setSqlSession(SqlSession sqlSession) {
+		 this.sqlSession = sqlSession;
+	}
+	
+	/**
+	 * 通过条件查询符合条件的对象
+	 * @param objm
+	 * @return List<ObjModel>
+	 */
+	public List<ObjModel> queryObjects(ObjModel objm) {
+		return this.sqlSession.selectList("locationQuery.selectObjects",objm);
+	}
+	
+	/**
+	 * 通过对象查询地理位置信息
+	 * @param obj
+	 * @return List<LocationSimple>
+	 */
+	public List<LocationSimple> queryLocation(ObjModel obj) {
+		System.out.println("objectIMEI:" + obj.getIMEI() + "\nobjectIMSI:" + obj.getIMSI());
+		return this.sqlSession.selectList("locationQuery.selectLocation",obj);
+	}
+}

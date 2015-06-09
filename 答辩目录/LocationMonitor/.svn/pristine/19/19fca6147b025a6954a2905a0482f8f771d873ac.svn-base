@@ -1,0 +1,161 @@
+define(function (require, exports, module){
+	require('jquery');
+	require('backbone');
+	require('highcharts');  
+
+	// 日历控件
+	var datetimepicker = require('../js/map_query/datetimepicker');
+	datetimepicker.init();
+
+	var homehoner = {
+			xArray : null,
+			solvedArray:null,
+			u_solveArray:null,
+			allArray:null,
+			titleText:'告警情况统计表',
+			time:null,
+			/************采集数据总图数据定义***********************/
+			alldata_yArray:null,
+			ajaxRequest: function (time) {
+				$.ajax({
+					type : "get",
+					content : "application/x-www-form-urlencoded;charset=UTF-8",
+					url : "../../handler/selectAlert/viewAlert",
+					dataType : 'json',
+					async : false,
+					data : {
+						strTime:time
+					},
+					success:function(result){  
+						homehoner.xArray = result.data.date.strTime; 
+						homehoner.solvedArray = result.data.date.series_resolved; 
+						homehoner.u_solveArray= result.data.date.series_n_resolve; 
+						homehoner.allArray = result.data.date.series;
+						homehoner.alldata_yArray = result.data.date.locationNum;
+					}
+				});
+			},
+			warningInfo: function(){
+				$('#container').highcharts({
+					chart: {
+						type: 'column'
+					},
+					title: {
+						text: homehoner.titleText
+					},
+					xAxis: {
+						categories:homehoner.xArray,
+						title: {
+							text: '告警时间'
+						}
+					},
+					yAxis: {
+						allowDecimals:false ,
+						min: 0,
+						title: {
+							text: '告警数目 (条)'
+						}
+					},
+					tooltip: {
+						headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+						pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+						'<td style="padding:0"><b>{point.y:.0f}条</b></td></tr>',
+						footerFormat: '</table>',
+						shared: true,
+						useHTML: true
+					},
+					plotOptions: {
+						column: {
+							pointPadding: 0.2,
+							borderWidth: 0
+						}
+					},
+					series: [{
+						name: '告警总条数',
+						data: homehoner.allArray,
+						color:'#003366'
+					}, {
+						name: '已处理告警数',
+						data: homehoner.solvedArray,
+						color:'#66CC00'
+					}, {
+						name: '未处理告警数',
+						data: homehoner.u_solveArray,
+						color:'#FF0000'
+					}]
+				});
+			},
+			allDateInfo: function(){
+				$(function () {
+					$('#allDate').highcharts({
+						title: {
+							text: '采集数量汇总图',
+							x: -20 //center
+						},
+						subtitle: {
+							text: '',
+							x: -20
+						},
+						xAxis: {
+							categories:homehoner.xArray,
+							title: {
+								text: '采集时间'
+							}
+							//  categories: ['2015-3-1', '2015-3-2', '2015-3-3', '2015-3-4', '2015-3-5', '2015-3-6','2015-3-7']
+						},
+						yAxis: {
+							allowDecimals:false,
+							min:0,
+							title: {
+								text: '采集数量(条)'
+							},
+							plotLines: [{
+								value: 0,
+								width: 1,
+								color: '#808080'
+							}]
+						},
+						tooltip: {
+							valueSuffix: '条'
+						},
+						legend: {
+							layout: 'vertical',
+							align: 'right',
+							verticalAlign: 'middle',
+							borderWidth: 0
+						},
+						series: [{
+							name: '采集总数',
+							data:homehoner.alldata_yArray 
+						}]
+					});
+				});
+			},
+			showTimeInfo: function(){
+				var allTime = homehoner.xArray;
+				var Str = allTime[0]+"-"+allTime[allTime.length-1];
+				$("#timePicker").val(Str);
+			} 
+	};
+	homehoner.ajaxRequest("");
+	homehoner.warningInfo();
+	homehoner.allDateInfo();
+	homehoner.showTimeInfo();
+	//时间查询
+	$("#searchBtn").click(function(){ 
+		//请求三个数组：已处理、未处理、总处理   
+		time = $("#timePicker").val(); 
+		homehoner.titleText = '所查时间段内告警情况统计表';
+		homehoner.ajaxRequest(time); 
+		//告警表格统计
+		homehoner.warningInfo(); 
+		homehoner.allDateInfo();
+		homehoner.showTimeInfo();
+	});
+
+	$("#inputCancel").click(function(){ 
+		$("#timePicker").val(""); 
+	});
+
+});
+

@@ -1,0 +1,25 @@
+package com.swust.kelab.repos;
+
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.swust.kelab.domain.AlertViewData;
+
+
+@Repository("alertDAO")
+public class AlertDAO {
+	
+	@Autowired
+	private SqlSession sqlSession;
+	public void setSqlSession(SqlSession sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+	public AlertViewData select(Date time) {
+		return this.sqlSession.selectOne("select.selectAVD", time);
+	}
+
+}

@@ -1,0 +1,171 @@
+{
+    "meta": {
+        "name": "查询对象列表",
+        "description": "查询对象列表",
+        "type": ["GET", "POST"],
+        "responseMap": [
+            {
+                "rule": [
+                    {
+                        "type": "request",
+                        "property": "IMEI",
+                        "value": "1"
+                    }
+                ],
+                "schema": "response"
+            }
+        ]
+    },
+    "request": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "time": {
+                "type": "string",
+                "description": "时间区间"
+            },
+            "IMEI": {
+                "type": "number",
+                "description": "手机串号"
+            },
+            "IMSI": {
+                "type": "number",
+                "description": "卡串号"
+            }
+        }
+    },
+    "response": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "data"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "状态码",
+                "default": 200,
+                "maximum": 999,
+                "minimum": 100
+            },
+            "data": {
+                "type": "object",
+                "description": "对象列表",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "description": "单个对象",
+                        "maxItems": 6,
+                        "minItems": 6,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ObjId": {
+                                    "type": "integer",
+                                    "description": "对象ID"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "姓名",
+                                    "enum": ["郭豪", "何宇恒", "王一君", "付晓"],
+                                    "maxLength": 26,
+                                    "minLength": 18
+                                },
+                                "IMEI": {
+                                    "type": "number",
+                                    "description": "手机串号",
+                                    "minimum": 1000000000000000,
+                                    "maximum": 9999999999999999
+                                },
+                                "IMSI": {
+                                    "type": "number",
+                                    "description": "卡串号",
+                                    "minimum": 1000000000000000,
+                                    "maximum": 9999999999999999
+                                },
+                                "phone": {
+                                    "type": "number",
+                                    "description": "手机号",
+                                    "minimum": 10000000000,
+                                    "maximum": 99999999999
+                                },
+                                "time": {
+                                    "type": "string",
+                                    "description": "时间区间",
+                                    "default": "2013/12/24 12:30~2013/12/16 16:30"
+                                },
+                                "items": {
+                                    "type": "array",
+                                    "description": "每个对象的数据",
+                                    "maxItems": 12,
+                                    "minItems": 6,
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "DataId": {
+                                                "type": "integer",
+                                                "description": "数据ID"
+                                            },
+                                            "longitude": {
+                                                "type": "number",
+                                                "description": "经度",
+                                                "minimum": 104329190,
+                                                "maximum": 104878128
+                                            },
+                                            "latitude": {
+                                                "type": "number",
+                                                "description": "纬度",
+                                                "minimum": 31295416,
+                                                "maximum": 31565312
+                                            },
+                                            "time": {
+                                                "type": "string",
+                                                "description": "时间区间",
+                                                "default": "2013/12/24 12:30~2013/12/16 16:30"
+                                            },
+                                            "area": {
+                                                "type": "string",
+                                                "description": "时间区间",
+                                                "default": "2013/12/24 12:30~2013/12/16 16:30"
+                                            }
+                                        },
+                                        "required": [
+                                            "DataId",
+                                            "longitude",
+                                            "latitude",
+                                            "time",
+                                            "area"
+                                        ]
+                                    }
+                                }
+                            },
+                            "required": [
+                                "ObjId",
+                                "name",
+                                "IMEI",
+                                "IMSI",
+                                "items",
+                                "phone",
+                                "time"
+                            ]
+                        }
+                    }
+                },
+                "required": ["items"]
+            }
+        }
+    },
+    "responseError": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "错误码"
+            },
+            "message": {
+                "type": "string",
+                "description": "错误反馈"
+            }
+        }
+    }
+}

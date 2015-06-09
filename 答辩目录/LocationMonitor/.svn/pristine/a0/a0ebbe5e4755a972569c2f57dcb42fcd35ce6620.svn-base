@@ -1,0 +1,225 @@
+define(function (require, exports, module) {
+    var template = require('artTemplate');
+    var $$warnning_model = require('../map_warnning/warnning_model');
+    var map = {
+        init: function () {
+            // 百度地图API功能
+            var mp = new BMap.Map("myMap");    // 创建Map实例
+            var self = this;
+            mp.centerAndZoom(new BMap.Point(105.255254, 30.581156), 12);
+            mp.setCurrentCity("遂宁"); // 设置地图显示的城市 此项是必须设置的
+            mp.enableScrollWheelZoom(true);
+            self.marker(mp);
+            window.myMap = mp;
+        },
+        drawArea: function (mp) {
+            //实例化鼠标绘制工具
+            var styleOptions = {
+                strokeColor:"red",    //边线颜色。
+                fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+                strokeWeight: 3,       //边线的宽度，以像素为单位。
+                strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+                fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+                strokeStyle: 'solid' //边线的样式，solid或dashed。
+            };
+            var drawingManager = new BMapLib.DrawingManager(mp, {
+                isOpen: false, //是否开启绘制模式
+                enableDrawingTool: false, //是否显示工具栏
+                drawingToolOptions: {
+                    anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                    offset: new BMap.Size(130, 5), //偏离值
+                    drawingModes: [] // 默认可绘制的图形
+                }
+//                circleOptions: styleOptions //圆的样式
+            });
+//            drawingManager.enableCalculate();
+            drawingManager.setDrawingMode(BMAP_DRAWING_RECTANGLE);
+            drawingManager.open();
+            drawingManager.addEventListener('overlaycomplete', function (e){
+                var area = e.overlay,
+                    bounds = area.getBounds(),
+                    sw = bounds.getSouthWest(), // 西南角经纬度
+                    ne = bounds.getNorthEast(); // 东北角经纬度
+                window.longitudeA = sw.lng;
+                window.latitudeA = sw.lat;
+                window.longitudeB = ne.lng;
+                window.latitudeB = ne.lat;
+                $('.warning_area')
+                    .addClass('active')
+                    .removeClass('btn-default')
+                    .addClass('btn-success')
+                    .text('已选择告警区域(点击取消选择)');
+                window.area = area;
+                this.close();
+            });
+
+        },
+        marker: function (mp) {
+            var self = this;
+            // 百度地图API功能
+            mp.panTo(new BMap.Point(116.3964,39.9093));
+
+            // 复杂的自定义覆盖物
+            function ComplexCustomOverlay(point, cfg){
+                this._point = point;
+                this._cfg = cfg;
+            }
+
+            ComplexCustomOverlay.prototype = new BMap.Overlay();
+
+            ComplexCustomOverlay.prototype.initialize = function(map){
+                var self = this,
+                    cfg = this._cfg;
+
+                this._map = map;
+                var geoc = new BMap.Geocoder();
+
+                var searchInfoWindow = null;
+
+                geoc.getLocation(this._point, function(rs){
+                    var addComp = rs.addressComponents;
+                    var tittle = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+                    var contentTpl = '<div style="margin:0;line-height:20px;padding:2px;">' +
+                		'IMEI：{{data.imei}}' +
+                		'<br/>IMSI：{{data.imsi}}' +                        
+                		'<br/>经度：{{data.longitudeBaidu}}' +
+                        '<br/>纬度：{{data.latitudeBaidu}}' +                       
+                        '<br/>时间：{{data.posTime}}' +                        
+                        '</div>';
+                    var render = template.compile(contentTpl);
+                    var html = render(cfg);
+                    //创建检索信息窗口对象
+                    searchInfoWindow = new BMapLib.SearchInfoWindow(map, html, {
+                        title: tittle,      //标题
+                        width: 290,             //宽度
+                        height: 120,              //高度
+                        panel: "panel",         //检索结果面板
+                        enableAutoPan: true,     //自动平移
+                        searchTypes: [
+                            BMAPLIB_TAB_SEARCH,   //周边检索
+                            BMAPLIB_TAB_TO_HERE,  //到这里去
+                            BMAPLIB_TAB_FROM_HERE //从这里出发
+                        ]
+                    });
+                });
+
+
+
+                console.log(cfg);
+                var overlayStyle = {
+                    background: 'url("../img/markers.png")',
+                    width: '22px',
+                    height: '29px',
+                    fontSize: '15px',
+                    position: 'absolute',
+                    color: '#fff',
+                    whiteSpace: 'pre-wrap',
+                    zIndex: BMap.Overlay.getZIndex(this._point.lat)
+                };
+
+                var div = this._div = document.createElement("div");
+                div.id = 'marker' + cfg.data.alertID;
+                div.className = 'marker' + cfg.alertConfigID + ' marker';
+
+                for (var key in overlayStyle) {
+                    if (overlayStyle.hasOwnProperty(key)) {
+                        div.style[key] = overlayStyle[key];
+                    }
+                }
+
+                div.onmouseover = function () {
+                    div.style.backgroundPosition = '0 -34px';
+                };
+
+                div.onmouseout = function () {
+                    div.style.backgroundPosition = '0 0';
+                };
+                div.onclick = function () {
+                    searchInfoWindow.open(self._point);
+                };
+
+                div.appendChild(document.createTextNode(' ' + this._cfg.index));
+
+                mp.getPanes().labelPane.appendChild(div);
+
+                return div;
+            };
+
+            ComplexCustomOverlay.prototype.draw = function(){
+                var map = this._map;
+                var pixel = map.pointToOverlayPixel(this._point);
+                this._div.style.left = pixel.x - 14 + "px";
+                this._div.style.top = pixel.y - 17 + "px";
+            };
+
+
+
+//            var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(116.407845,39.914101), {});
+
+            var temp,
+                cfg = {};
+            $$warnning_model.on('change:list', function () {
+                mp.clearOverlays();
+                window.polygon = [];
+                var data = this.get('list');
+                if (data.data && data.data.totalCount > 0) {
+                    var items = data.data.items[0].data;
+                    _.each(items, function (vv, ii) {
+                        cfg.alertConfigID = vv.alertConfigID;
+                        cfg.pushFlag = vv.pushFlag;
+                        cfg.index = ii + 1;
+                        if (vv.longitudeA && vv.longitudeB && vv.latitudeB && vv.latitudeA) {
+                            temp = self.alertArea(vv.longitudeA, vv.latitudeA, vv.longitudeB, vv.latitudeB, vv.alertConfigID);
+                            window.polygon.push(temp);
+                            mp.addOverlay(temp);
+                        }
+
+                        if (vv.alertList.length) {
+                            _.each(vv.alertList, function (v, i) {
+                                if (i == 0) {
+                                    mp.panTo(new BMap.Point(v.longitudeBaidu, v.latitudeBaidu));
+                                }
+                                cfg.data = v;
+                                temp = new ComplexCustomOverlay(new BMap.Point(v.longitudeBaidu, v.latitudeBaidu), cfg);
+                                mp.addOverlay(temp);
+                            });
+                        }
+
+                    });
+                }
+            });
+//            mp.addOverlay(myCompOverlay);
+        },
+        alertArea: function (longitudeA, latitudeA, longitudeB, latitudeB, id) {
+            var polygon = new BMap.Polygon([
+                new BMap.Point(longitudeA,latitudeA),
+                new BMap.Point(longitudeA,latitudeB),
+                new BMap.Point(longitudeB,latitudeB),
+                new BMap.Point(longitudeB,latitudeA)
+            ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:1});
+
+            polygon.addEventListener('mouseover', function () {
+                $('.marker' + id).css({
+                    'background-position': '0 -72px',
+                    width: '25px',
+                    height: '36px',
+                    'font-size': '18px'
+                });
+                this.setFillOpacity(0.5);
+                this.setStrokeColor('red');
+            });
+            polygon.addEventListener('mouseout', function () {
+                $('.marker' + id).css({
+                    'background-position': '0 0',
+                    width: '22px',
+                    height: '29px',
+                    'font-size': '15px'
+                });
+                this.setFillOpacity(1);
+                this.setStrokeColor('blue');
+            });
+            return polygon;
+        }
+    };
+    module.exports = map;
+});

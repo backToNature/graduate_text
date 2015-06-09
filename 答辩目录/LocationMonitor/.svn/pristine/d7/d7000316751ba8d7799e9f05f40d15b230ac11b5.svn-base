@@ -1,0 +1,87 @@
+package com.swust.kelab.web.controller;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.swust.kelab.domain.AlertConfig;
+import com.swust.kelab.service.AlertConfigService;
+import com.swust.kelab.web.json.JsonAndView;
+
+
+@Controller
+@RequestMapping("/alertConfig")
+public class AlertConfigController {
+	@Autowired
+	private AlertConfigService alertConfigService;
+	
+	/**
+	 * 增加一个告警设置
+	 * @param alertConfig
+	 * @return 是否添加成功
+	 */
+	@RequestMapping(value="/add",method=RequestMethod.GET)
+	public JsonAndView addOne(AlertConfig alertConfig){
+		JsonAndView jv = new JsonAndView();
+		alertConfig.setConfigTime(new Date());
+		alertConfigService.addOneAlertConfig(alertConfig);
+		jv.setRet(true);		
+		return jv;	
+	}
+	
+	/**
+	 * 删除一个告警设置
+	 * @param alertConfigID
+	 * @return 是否删除成功
+	 */
+	@RequestMapping(value="/delete",method=RequestMethod.GET)
+	public JsonAndView deleteOne(int alertConfigID){
+		JsonAndView jv = new JsonAndView();
+		int flag = alertConfigService.deleteOneAlertConfig(alertConfigID);
+		jv.setRet(true);
+		return jv;	
+	}	
+	
+	/**
+	 * 查看某个告警设置
+	 * @param alertConfigID
+	 * @return alertconfig
+	 */
+	@RequestMapping(value="/view",method=RequestMethod.GET)
+	public JsonAndView viewOne(int alertConfigID){
+		JsonAndView jv = new JsonAndView();
+		AlertConfig alertConfig = alertConfigService.viewOneAlertConfig(alertConfigID);
+		jv.addData("alertConfig", alertConfig);
+		return jv;	
+	}
+	
+	/**
+	 * 查看用户所有的告警设置
+	 * @param userID
+	 * @return
+	 */
+	@RequestMapping(value="/views",method=RequestMethod.GET)
+	public JsonAndView viewAll(int userID){
+		JsonAndView jv = new JsonAndView();
+		List<AlertConfig> result = alertConfigService.viewAllAlertConfig(userID);	
+		jv.addData("alertconfigs",result);
+		return jv;
+	}
+	
+	/**
+	 * 修改告警条件
+	 * @param alertConfig
+	 * @return
+	 */
+	@RequestMapping(value="/update",method=RequestMethod.GET)
+	public JsonAndView update(AlertConfig alertConfig){
+		JsonAndView jv = new JsonAndView();
+		int flag = alertConfigService.update(alertConfig);
+		jv.setRet(true);
+		return jv;
+	}
+}

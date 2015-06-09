@@ -1,0 +1,38 @@
+$(document).ready(function(){	
+	paginationPage();
+	//绑定分页的一些操作
+	initialBind();
+	//查询意见领袖列表
+	viewaction = "../../handler/leader/viewLeaders",
+	params = {
+			"pageArray" : new Array(),
+			"recordPerPage" : 10
+	};	
+	initSearch();
+});
+
+/**
+ * 加载数据到数据区域
+ * @param pageRecords
+ */
+function refreshContent(pageRecords) {
+	$.ajaxSettings.async = false;
+	var leadersInfo="";
+	if (pageRecords.data.length == 0) {
+		$('#pagination').hide();
+		leadersInfo = "<tr class=\"info\" ><td class=\"tdcenter\"><i class=\"icon-heart\"></i><strong>意见领袖查询失败！</strong></td></tr>";
+	} else {
+		$.each(pageRecords.data, function(itemIndex, item) {
+			leadersInfo+=
+				"<tr>"+
+				"<td>" + item.leaderRank + "</td>"+
+				"<td><a target=\"_blank\" href='leaderDetail.html?accoId="+item.accoId+"'>"+item.nickname+"</a></td>"+
+				"<td>" + item.totalWeiboNum + "</td>"+
+				"<td>"+item.weiboNum + "</td>"+
+				"<td>" + item.fansNum + "</td>"+
+				"<td>"+item.attationNum +"</td>"+
+				"</tr>";
+		});
+	}
+	$('#leadersList tbody:nth-child(2)').empty().append(leadersInfo);
+}

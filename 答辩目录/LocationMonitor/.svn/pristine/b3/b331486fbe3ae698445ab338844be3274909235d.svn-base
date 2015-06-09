@@ -1,0 +1,22 @@
+//入口
+define(function (require, exports, module) {
+	require('jquery');
+	require('backbone');
+    var $$warnning_model = require('../map_warnning/warnning_model');
+    // 地图部分
+	var map = require('../map_warnning/warnning');
+    var template = require('artTemplate');
+    map.init();
+
+    // 列表部分
+    var list = require('../map_warnning/list')
+    list.init();
+
+    var show_data_ul = $('.show_data ul');
+    $$warnning_model.on('change:list', function () {
+        var lisr_render = template('tpl_show_data', $$warnning_model.get('list'));
+        show_data_ul.html(lisr_render);
+    });
+
+    $$warnning_model.search(null);
+});

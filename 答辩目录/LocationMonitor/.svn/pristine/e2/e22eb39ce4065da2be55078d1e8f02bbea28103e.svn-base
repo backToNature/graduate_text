@@ -1,0 +1,5 @@
+$(document).ready(function(){
+	var footerString = "西南科技大学知识工程实验室";
+	var footerStr = "<div class='footer text-center'><section>" + footerString + "</section></div>";
+	$("#footer").append(footerStr);
+});

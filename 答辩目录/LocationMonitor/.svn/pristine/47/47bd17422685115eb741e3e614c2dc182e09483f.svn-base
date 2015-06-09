@@ -1,0 +1,82 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    var $$map_model = require('../map_query/map_model');
+    require('jquery');
+    var list = {
+        init: function () {
+            var self = this;
+            $(function () {
+                self.only();
+                self.hover();
+                self.pagination();
+            });
+        },
+        only: function () {
+            /**
+             * 只展示某个对象的点
+             */
+            $('.show_data').delegate('.only_show', 'change', function () {
+                var index = $(this).closest('li').attr('data-index');
+                _.each(window.polylineArr, function (val ,inde) {
+                    if (inde != index) {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.hide();
+                        });
+                        val.hide();
+                    } else {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.show();
+                        });
+                        window.show_index = inde;
+                        val.show();
+                    }
+                });
+            });
+        },
+        hover: function () {
+            /**
+             * 鼠标悬浮在列表对象时，地图对应图标效果
+             */
+            var list = $('.show_data'),
+                id;
+            list.delegate('[data-index]', 'mouseover', function () {
+                id = $(this).attr('id');
+                $('.mark' + id).css('background-position', '0 -34px');
+            });
+
+            list.delegate('[data-index]', 'mouseout', function () {
+                id = $(this).attr('id');
+                $('.mark' + id).css('background-position', '0 0');
+            });
+        },
+        pagination: function () {
+            var pagination_wrapper = $('.map_pagination');
+            pagination_wrapper.delegate('#pre_page', 'click', function () {
+                var page = parseInt(pagination_wrapper.attr('data-page'));
+                if (page <= 1) {
+                    return;
+                } else {
+                    window.param.pageNumber = page - 1;
+                    $$map_model.search(window.param);
+                }
+            });
+
+            pagination_wrapper.delegate('#next_page', 'click', function () {
+                var page = parseInt(pagination_wrapper.attr('data-page')),
+                    totalPage = parseInt(pagination_wrapper.attr('data-totalPage'));
+
+                if (totalPage <=  page) {
+                    return;
+                } else {
+                    window.param.pageNumber = page + 1;
+                    $$map_model.search(window.param);
+                }
+            });
+
+            pagination_wrapper.delegate('#enter_page', 'keydown', function (e) {
+                alert(e.which);
+            });
+        }
+    };
+    module.exports = list;
+});

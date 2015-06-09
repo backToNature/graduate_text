@@ -1,0 +1,83 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>意见领袖-详细页面</title>
+<link rel="stylesheet" href="../css/bootstrap.css" />
+<link rel="stylesheet" href="../css/isearch4-resp.css" />
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12"></div>
+			<div class="span12">
+				<div class="navbar navbar-inverse navbar-fixed-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<div class="nav-collapse collapse" style="color: #fff;">
+								<h1>意见领袖挖掘</h1>
+								
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="span12">
+			<a style="float: right;"
+									href="javascript:history.go(-1);" id="bbs"><i
+									class="icon-arrow-left "></i>返回</a>
+				<h3 class="page-header">意见领袖详细信息</h3>
+				<h4 class="page-header">个人信息</h4>
+				<div class="span3 form-horizontal">
+					<div class="control-group">
+						<div class="controls" id="info-item0"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item1"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item2"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item9"></div>
+					</div>
+				</div>
+				<div class="span3 form-horizontal">
+					<div class="control-group">
+						<div class="controls" id="info-item3"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item4"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item5"></div>
+					</div>
+				</div>
+				<div class="span3 form-horizontal">
+
+					<div class="control-group">
+						<div class="controls" id="info-item6"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item7"></div>
+					</div>
+					<div class="control-group">
+						<div class="controls" id="info-item8"></div>
+					</div>
+				</div>
+			</div>
+			<div class="span12">
+				<h4 class="page-header">主要微博</h4>
+				<div class="span9 form-horizontal" id="mainWeibo"></div>
+			</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+
+</body>
+<script src="../js/ext/jquery-1.8.3.js"></script>
+<script src="../js/ext/bootstrap.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/leaderDetail.js"></script>
+</html>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="locationQuery">
+
+<select id="selectLocation" parameterType="com.swust.kelab.model.ObjModel" resultType="com.swust.kelab.domain.LocationSimple">
+select LongitudeBaidu as longitude,
+LatitudeBaidu as latitude,
+PosTime as time,
+AreaID as area
+from location 
+<where>
+1 = 1
+<if test="imei!=null and imei!=''">
+and IMEIID = (select IMEIID from imei where IMEI=#{imei})
+</if>
+<if test="imsi!=null and imsi!=''">
+and IMSIID = (select IMSIID from imsi where IMSI=#{imsi})
+</if>
+<if test="dateStart!=null and dateEnd!=null">
+and PosTime>=#{dateStart} 
+and PosTime<![CDATA[<=]]>#{dateEnd}
+</if>
+</where>
+</select>
+
+<select id="selectCount" parameterType="Map" resultType="Integer">
+select count(*)
+from objectinfo
+<where>
+1 = 1
+<if test="imei!=null and imei!=''">
+and ObjectIMEI=#{imei}
+</if>
+<if test="imsi!=null and imsi!=''">
+and ObjectIMSI=#{imsi}
+</if>
+<if test="phone!=null and phone!=''">
+and ObjectPhone=#{phone}
+</if>
+</where>
+</select>
+
+<select id="selectObjByQueryMap" parameterType="Map" resultType="com.swust.kelab.model.ObjModel">
+select ObjectName as name,
+ObjectIMEI as imei,
+ObjectIMSI as imsi,
+ObjectPhone as phone
+from objectinfo
+<where>
+1 = 1
+<if test="imei!=null and imei!=''">
+and ObjectIMEI=#{imei}
+</if>
+<if test="imsi!=null and imsi!=''">
+and ObjectIMSI=#{imsi}
+</if>
+<if test="phone!=null and phone!=''">
+and ObjectPhone=#{phone}
+</if>
+limit #{startIndex},#{maxCount}
+</where>
+</select>
+
+<select id="selectLocNumber" parameterType="Map" resultType="Integer">
+select count(*)
+from location
+where
+1 = 1
+<if test="imei!=null and imei!=''">
+and IMEIID=(select IMEIID from imei where imei=#{imei})
+</if>
+<if test="imsi!=null and imsi!=''">
+and IMSIID=(select IMSIID from imsi where imsi=#{imsi})
+</if>
+<if test="dateStart!=null and dateEnd!=null">
+and PosTime>=#{dateStart} 
+and PosTime<![CDATA[<=]]>#{dateEnd}
+</if>
+<if test="longitudeA!=null and longitudeB!=null and latitudeA!=null and latitudeB!=null">
+and cast(LongitudeBaidu as DECIMAL(11,8))>=#{longitudeA}
+and cast(LongitudeBaidu as DECIMAL(11,8))<![CDATA[<=]]>#{longitudeB}
+and cast(LatitudeBaidu as DECIMAL(11,8))>=#{latitudeA}
+and cast(LatitudeBaidu as DECIMAL(11,8))<![CDATA[<=]]>#{latitudeB}
+</if>
+</select>
+
+<select id="selectLocByPage" parameterType="Map" resultType="com.swust.kelab.domain.LocationSimple">
+select LongitudeBaidu as longitude,
+LatitudeBaidu as latitude,
+PosTime as time,
+AreaID as area,
+PhoneType as phoneType,
+AppType as appType
+from location 
+<where>
+1 = 1
+<if test="imei!=null and imei!=''">
+and IMEIID = (select IMEIID from imei where IMEI=#{imei})
+</if>
+<if test="imsi!=null and imsi!=''">
+and IMSIID = (select IMSIID from imsi where IMSI=#{imsi})
+</if>
+<if test="dateStart!=null and dateEnd!=null">
+and PosTime>=#{dateStart} 
+and PosTime<![CDATA[<=]]>#{dateEnd}
+</if>
+<if test="longitudeA!=null and longitudeB!=null and latitudeA!=null and latitudeB!=null">
+and cast(LongitudeBaidu as DECIMAL(11,8))>=#{longitudeA}
+and cast(LongitudeBaidu as DECIMAL(11,8))<![CDATA[<=]]>#{longitudeB}
+and cast(LatitudeBaidu as DECIMAL(11,8))>=#{latitudeA}
+and cast(LatitudeBaidu as DECIMAL(11,8))<![CDATA[<=]]>#{latitudeB}
+</if>
+order by PosTime 
+limit #{startIndex},#{endIndex}
+</where>
+</select>
+</mapper>

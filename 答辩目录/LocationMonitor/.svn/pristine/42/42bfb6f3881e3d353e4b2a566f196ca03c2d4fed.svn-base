@@ -1,0 +1,182 @@
+<beans:beans xmlns="http://www.springframework.org/schema/batch"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<!-- 需要从spring-batch-core-2.1.2.RELEASE.jar中 org.springframework.batch.core 
+		schema-mysql.sql文件导入数据库表 -->
+	<beans:bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
+		<!-- <beans:property name="sqlSessionFactory" ref="sqlSessionFactory" /> -->
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="transactionManager" ref="transactionManager" />
+	</beans:bean>
+
+	<beans:bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<beans:property name="jobRepository" ref="jobRepository" />
+		<beans:property name="taskExecutor">
+			<beans:bean class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
+			<!-- org.springframework.core.task.SyncTaskExecutor -->
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="jobOperator"
+		class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+		<beans:property name="jobExplorer" ref="jobExplorer" />
+		<beans:property name="jobRepository" ref="jobRepository" />
+		<beans:property name="jobRegistry" ref="jobRegistry" />
+		<beans:property name="jobLauncher" ref="jobLauncher" />
+	</beans:bean>
+
+	<beans:bean id="jobExplorer"
+		class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+
+	<beans:bean
+		class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<beans:property name="jobRegistry" ref="jobRegistry" />
+	</beans:bean>
+
+	<beans:bean id="jobRegistry"
+		class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+
+	<beans:bean
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<beans:property name="triggers">
+			<beans:bean id="cronTrigger"
+				class="org.springframework.scheduling.quartz.CronTriggerBean">
+				<beans:property name="jobDetail" ref="jobDetail" />
+				<beans:property name="cronExpression" value="0/3 * * * * ?" />
+			</beans:bean>
+		</beans:property>
+		<!-- 立即开始 -->
+		<beans:property name="autoStartup">
+			<beans:value>true</beans:value>
+		</beans:property>
+		<beans:property name="quartzProperties">
+			<beans:props>
+				<!-- 取消检查更新 -->
+				<beans:prop key="org.quartz.scheduler.skipUpdateCheck">
+					true
+				</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+
+	<beans:bean id="jobDetail"
+		class="org.springframework.scheduling.quartz.JobDetailBean">
+		<beans:property name="jobClass"
+			value="com.swust.kelab.service.engine.JobLauncherDetails" />
+		<beans:property name="group" value="quartz-batch" />
+		<beans:property name="jobDataAsMap">
+			<beans:map>
+				<beans:entry key="jobName" value="locationEngineJobWrapper" />
+				<beans:entry key="cursor" value="1" />
+				<beans:entry key="jobLocator" value-ref="jobRegistry" />
+				<beans:entry key="jobLauncher" value-ref="jobLauncher" />
+				<beans:entry key="jobRepository" value-ref="jobRepository" />
+			</beans:map>
+		</beans:property>
+	</beans:bean>
+
+	<job id="locationEngineJobWrapper" restartable="true"
+		incrementer="jobParametersIncrementer">
+		<decision id="recoveryFlowDecision" decider="recoveryFlowDecider">
+			<next on="FIRST_RUN" to="defineParametersOnFirstRun" />
+			<next on="RECOVER" to="recover.batchJob" />
+			<next on="CURRENT" to="current.batchJob" />
+			<end on="RUNNING" />
+		</decision>
+		<step id="defineParametersOnFirstRun" next="current.batchJob">
+			<tasklet ref="firstRunTasklet" />
+		</step>
+		<step id="recover.batchJob" next="current.batchJob">
+			<job ref="locationEngineJob" job-launcher="jobLauncher"
+				job-parameters-extractor="jobExecutionWindowParametersExtractor" />
+		</step>
+		<step id="current.batchJob">
+			<job ref="locationEngineJob" job-launcher="jobLauncher"
+				job-parameters-extractor="jobExecutionWindowParametersExtractor" />
+		</step>
+	</job>
+	<beans:bean id="jobParametersIncrementer"
+		class="org.springframework.batch.core.launch.support.RunIdIncrementer">
+	</beans:bean>
+	<beans:bean id="recoveryFlowDecider"
+		class="com.swust.kelab.service.engine.RecoveryFlowDecider">
+		<beans:property name="jobExplorer" ref="jobExplorer" />
+		<beans:property name="jobRepository" ref="jobRepository" />
+	</beans:bean>
+	<beans:bean id="jobExecutionWindowParametersExtractor"
+		class="com.swust.kelab.service.engine.JobExecutionWindowParametersExtractor">
+		<beans:property name="jobRepository" ref="jobRepository" />
+	</beans:bean>
+	<beans:bean id="firstRunTasklet"
+		class="com.swust.kelab.service.engine.FirstRunTasklet">
+	</beans:bean>
+	<job id="locationEngineJob">
+		<step id="allStep">
+			<tasklet>
+				<chunk reader="locationReader" processor="locationProcessor"
+					writer="alertWriter" commit-interval="5" chunk-completion-policy="">
+				</chunk>
+				<listeners>
+					<listener ref="sendAlertListener" />
+					<listener ref="noDataFoundStepExecutionListener" />
+				</listeners>
+			</tasklet>
+			<end on="COMPLETED" />
+			<fail on="FAILED" exit-code="FAILED" />
+		</step>
+		<listeners>
+			<listener ref="locationEngineListener" />
+		</listeners>
+	</job>
+
+	<!-- processors -->
+	<beans:bean id="locationProcessor"
+		class="com.swust.kelab.service.engine.LocationProcessor">
+	</beans:bean>
+
+	<!-- readers -->
+	<beans:bean id="locationReader"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader"
+		scope="step">
+		<beans:property name="dataSource" ref="sqlServerDataSource" />
+		<beans:property name="sql"
+			value="select LocationNewID, IMEI, IMSI, PosTime, Longitude, 
+			Latitude, LocType, TransferFlag, LongitudeBaidu, 
+			LatitudeBaidu, AreaID, SrcIP, DstIP, PhoneType, AppType 
+			from LocationNew where LocationNewID not in 
+			(select top #{jobParameters['cursor']} LocationNewID 
+			from LocationNew)" />
+		<beans:property name="rowMapper">
+			<beans:bean class="com.swust.kelab.repos.LocationRawRowMapper" />
+		</beans:property>
+	</beans:bean>
+
+	<!-- writers -->
+	<beans:bean id="alertWriter"
+		class="org.springframework.batch.item.adapter.ItemWriterAdapter">
+		<beans:property name="targetObject" ref="alertService" />
+		<beans:property name="targetMethod" value="insertAlert" />
+	</beans:bean>
+	<beans:bean id="alertService" class="com.swust.kelab.service.AlertService" />
+
+	<!-- send alert listener -->
+	<beans:bean id="sendAlertListener"
+		class="com.swust.kelab.service.engine.SendAlertListener">
+	</beans:bean>
+	<beans:bean id="locationEngineListener"
+		class="com.swust.kelab.service.engine.LocationEngineListener">
+	</beans:bean>
+	<beans:bean id="noDataFoundStepExecutionListener"
+		class="com.swust.kelab.service.engine.NoDataFoundStepExecutionListener">
+	</beans:bean>
+</beans:beans>

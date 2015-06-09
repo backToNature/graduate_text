@@ -1,0 +1,36 @@
+define(function (require, exports, module){
+	require('jquery');
+	var haderhoner = {
+        header:function(){
+            var htmlheader = "<li class=\"nav_current\"><a href=\"../html/map.html\">地图展示</a></li><li>·</li><li  class=\"globle_header_tab\"><a href=\"#\" class=\"globle_open_list\">告警展示</a>"+
+            "<div class=\"globle_header_nav_option\"><p class=\"tab_litterlist\"><a href=\"../html/alarm.html\">告警设置</a></p><p class=\"tab_litterlist\"><a href=\"../html/alarm-display.html\">告警展示</a></p>"+
+            "</div></li><li>·</li><li><a href=\"#\">表格展示</a></li><li>·</li><li><a href=\"#\">告警管理</a></li><li>·</li><li class=\"globle_header_tab\"><a href=\"#\" class=\"globle_open_list\">数据管理</a>"+
+            "<div class=\"globle_header_nav_option\"><p class=\"tab_litterlist\"><a href=\"#\" >解析设置</a></p><p class=\"tab_litterlist\"><a href=\"#\" >数据统计</a></p><p class=\"tab_litterlist\"><a href=\"#\" >对象管理</a></p>"+
+            "<p class=\"tab_litterlist\"><a href=\"#\" >换卡分析</a></p></div></li><li>·</li><li class=\"globle_header_tab\"><a href=\"#\" class=\"globle_open_list\">系统管理</a><div class=\"globle_header_nav_option\">"+
+            "<p class=\"tab_litterlist\"><a href=\"#\">参数设置</a></p><p class=\"tab_litterlist\"><a href=\"#\">用户管理</a></p><p class=\"tab_litterlist\"><a href=\"#\">运行状态</a></p><p class=\"tab_litterlist\"><a href=\"#\">日志查看</a></p>"+
+            "</div></div></li>";
+            $(".globle_header_nav").append(htmlheader);
+        },
+	  	change:function(){
+	  		$(function(){
+	  			$('.globle_header_tab').hover(  
+                    function(){$(this).children('.globle_header_nav_option').slideDown(400,function(){
+                $('.tab_litterlist').hover(  
+                    function(){
+                         $(this).css('background','#336699');
+                    }, 
+                    function(){
+                         $(this).css('background','#33407A');
+                    });
+                      
+                    });
+                },  
+                    function(){$(this).children('.globle_header_nav_option').slideUp(400);}  
+                );  
+  			});
+        }
+	}
+   haderhoner.header();
+   haderhoner.change();
+});
+

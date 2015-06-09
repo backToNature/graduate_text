@@ -1,0 +1,89 @@
+package com.swust.kelab.service.engine;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.configuration.JobLocator;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.stereotype.Service;
+
+@Service(value = "locationEngineService")
+public class LocationEngineService {
+
+	JobLocator jobLocator;
+	String jobName;
+	JobLauncher jobLauncher;
+	JobOperator jobOperator;
+	
+	public int start() {
+		// 启动位置信息处理引擎
+		JobParameters jobParameters = loadJobParameter();
+
+		try {
+			jobLauncher.run(jobLocator.getJob(jobName), jobParameters);
+		} catch (JobExecutionAlreadyRunningException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobRestartException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobInstanceAlreadyCompleteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JobParametersInvalidException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchJobException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return 0;
+	}
+
+	public int stop()
+	{
+		return 0;
+	}
+	
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private JobParameters loadJobParameter() {
+		// TODO: 从数据库中取得参数
+		JobParametersBuilder jpBuilder = new JobParametersBuilder();
+		// jpBuilder.addLong("pageSize",new Long(Long.MAX_VALUE));
+		// jpBuilder.addLong("startID",new Long(10));
+		// jpBuilder.addLong("endID",new Long(20));
+		jpBuilder.addString("pageSize", "10");
+		jpBuilder.addString("startID", "10");
+		jpBuilder.addString("endID", "20");
+		jpBuilder.addString("Random", RandomStringUtils.random(5));
+
+		return jpBuilder.toJobParameters();
+	}
+
+	public void setJobLocator(JobLocator jobLocator) {
+		this.jobLocator = jobLocator;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
+	}
+
+	public void setJobLauncher(JobLauncher jobLauncher) {
+		this.jobLauncher = jobLauncher;
+	}
+
+	public void setJobOperator(JobOperator jobOperator) {
+		this.jobOperator = jobOperator;
+	}
+}

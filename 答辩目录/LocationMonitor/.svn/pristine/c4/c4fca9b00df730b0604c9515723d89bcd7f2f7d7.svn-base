@@ -1,0 +1,53 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+    var list = {
+        init: function () {
+            var self = this;
+            $(function () {
+                self.only();
+                self.hover();
+            });
+        },
+        only: function () {
+            /**
+             * 只展示某个对象的点
+             */
+            $('.show_data').delegate('.only_show', 'change', function () {
+                var index = $(this).closest('li').attr('data-index');
+                _.each(window.polylineArr, function (val ,inde) {
+                    if (inde != index) {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.hide();
+                        });
+                        val.hide();
+                    } else {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.show();
+                        });
+                        window.show_index = inde;
+                        val.show();
+                    }
+                });
+            });
+        },
+        hover: function () {
+            /**
+             * 鼠标悬浮在列表对象时，地图对应图标效果
+             */
+            var list = $('.show_data'),
+                id;
+            list.delegate('[data-index]', 'mouseover', function () {
+                id = $(this).attr('id');
+                $('.mark' + id).css('background-position', '0 -34px');
+            });
+
+            list.delegate('[data-index]', 'mouseout', function () {
+                id = $(this).attr('id');
+                $('.mark' + id).css('background-position', '0 0');
+            });
+        }
+    };
+    module.exports = list;
+});
+

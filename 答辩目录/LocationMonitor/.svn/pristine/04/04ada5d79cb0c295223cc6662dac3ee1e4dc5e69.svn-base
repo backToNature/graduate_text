@@ -1,0 +1,37 @@
+package com.swust.kelab.service.engine;
+
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.Alert;
+import com.swust.kelab.domain.Location;
+import com.swust.kelab.repos.AlertDAO;
+import com.swust.kelab.service.AlertService;
+import com.swust.kelab.service.LocationService;
+
+public class LocationProcessor implements ItemProcessor<Location, Alert> {
+
+	@Autowired
+	AlertService alertService;
+	@Autowired
+	LocationService locationService;
+
+	public Alert process(Location item) throws Exception {
+		Alert alert = null;
+		
+		// 写入location, imsi, imei, objectinfor四张表
+		if (locationService.importLocation(item)) {
+			// 查询locationConfig表，确定是否产生告警，返回告警对象
+			alert = alertService.createAlert(item);
+
+			System.out.println(item.getImei());
+			System.out.println(item.getLocationID());
+		}
+
+		return alert;
+	}
+
+}

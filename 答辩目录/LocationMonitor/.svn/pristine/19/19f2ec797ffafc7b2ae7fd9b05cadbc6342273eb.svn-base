@@ -1,0 +1,76 @@
+{
+    "meta": {
+        "name": "告警统计表",
+        "description": "告警统计表",
+        "type": ["GET", "POST"],
+        "responseMap": [
+            {
+                "rule": [
+                    {
+                        "type": "request",
+                        "property": "IMEI",
+                        "value": "1"
+                    }
+                ],
+                "schema": "response"
+            }
+        ]
+    },
+    "response": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "data"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "状态码",
+                "default": 200,
+                "maximum": 999,
+                "minimum": 100
+            },
+            "data": {
+                "type": "object",
+                "description": "数据",
+                "properties": {
+                    "time": {
+                        "type": "array",
+                        "description": "单个对象",
+                        "maxItems": 6,
+                        "minItems": 6,
+                        "items": {
+                            "type": "string",
+                            "default": "2014-12-24"
+                        }
+                    },
+                    "series": {
+                        "type": "array",
+                        "description": "告警总条数",
+                        "maxItems": 7,
+                        "minItems": 7,
+                        "items": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 20
+                        }
+                    }
+                },
+                "required": ["series", "time"]
+            }
+        }
+    },
+    "responseError": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "错误码"
+            },
+            "message": {
+                "type": "string",
+                "description": "错误反馈"
+            }
+        }
+    }
+}

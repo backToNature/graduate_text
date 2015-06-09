@@ -1,0 +1,114 @@
+package com.swust.kelab.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.Alert;
+import com.swust.kelab.domain.AlertData;
+import com.swust.kelab.domain.Location;
+import com.swust.kelab.repos.AlertDAO;
+
+@Service("alertService")
+public class AlertService {
+	@Autowired
+	private AlertDAO alertDAO;
+	public AlertData selectAlertData(String strTime) throws Exception{
+		AlertData alertData = new AlertData();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");// 日期格式
+		Calendar calendar = Calendar.getInstance();
+		String[] str = new String[2];
+		Date[] da = new Date[2];
+		Date date = new Date();
+		int numDay = 0;
+		int flag = 0;//默认7天时间
+		if(strTime == null || strTime == ""){
+			numDay = 7;
+		}else{
+			flag = 1;
+			str = strTime.split("-");
+			for (int i = 0; i < 2; i++) {
+				try {
+					da[i] = sdf.parse(str[i]);
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			Calendar calendar1 = Calendar.getInstance();
+			calendar1.setTime(da[0]);
+			Calendar calendar2 = Calendar.getInstance();
+			calendar2.setTime(da[1]);
+			int flag2 = -2;// flag2 =-1/0/+1
+			do {
+				calendar1.add(Calendar.DAY_OF_YEAR, +1);
+				flag2 = calendar1.getTime().compareTo(calendar2.getTime());
+				numDay++;
+			} while (flag2 <= 0);
+		}
+		String[] stime = new String[numDay];
+		Integer[] series = new Integer[numDay];
+		Integer[] series_resolved = new Integer[numDay];
+		Integer[] series_n_resolve = new Integer[numDay];
+		Integer[] locationNum = new Integer[numDay];
+		if(flag==0){
+			try {
+				date = sdf.parse(sdf.format(new Date()));//获得系统当前时间
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}else if(flag==1){
+			date = da[1];
+		}
+		calendar.setTime(date);
+		for(int i=(numDay-1);i>=0;i--){
+			stime[i] = sdf.format(calendar.getTime());
+			series[i] = alertDAO.selectSeries(calendar.getTime());
+			series_resolved[i] = alertDAO.selectSeries_resolved(calendar.getTime());
+			series_n_resolve[i] = alertDAO.selectSeries_n_resolve(calendar.getTime());
+			locationNum[i] = alertDAO.selectLocationNum(calendar.getTime());
+			calendar.add(Calendar.DAY_OF_YEAR, -1);
+		}
+		alertData.setStrTime(stime);
+		alertData.setSeries(series);
+		alertData.setSeries_resolved(series_resolved);
+		alertData.setSeries_n_resolve(series_n_resolve);
+		alertData.setLocationNum(locationNum);
+		return alertData;
+	}
+
+	/**
+	 * 
+	 * @description 保存告警
+	 * @author libo
+	 * @date 2015年4月18日 下午6:42:34
+	 *
+	 * @param alert
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertAlert(Alert alert) throws Exception {
+		System.out
+				.println("insert Alert for location#" + alert.getLocationID());
+		return alertDAO.add(alert);
+	}
+
+	/**
+	 * 
+	 * @description 查询locationConfig表，确定是否产生告警，返回告警对象
+	 * @author libo
+	 * @date 2015年4月19日 下午4:06:42
+	 *
+	 * @param item
+	 *            来自数据采集端的位置数据
+	 * @return
+	 */
+	public Alert createAlert(Location item) {
+		// TODO Auto-generated method stub
+		return new Alert(item);
+	}
+}

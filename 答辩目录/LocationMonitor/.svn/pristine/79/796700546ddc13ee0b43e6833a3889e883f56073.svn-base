@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="alertConfig">
+<insert id="insertOne" parameterType="com.swust.kelab.domain.AlertConfig">
+insert into alertconfig(UserID,ConfigTime,MonitorType,IMEI,IMSI,
+LogicCondition,AreaType,LongitudeA,LongitudeB,LatitudeA,LatitudeB,
+LongitudeCenter,LatitudeCenter,Radius,AreaID,PushFlag) 
+values 
+(#{userID},#{configTime},#{monitorType},#{imei},#{imsi},
+#{logicCondition},#{areaType},#{longitudeA},#{longitudeB},
+#{latitudeA},#{latitudeB},#{longitudeCenter},#{latitudeCenter},
+#{radius},#{areaID},#{pushFlag})
+</insert>
+
+<delete id="deleteOne" parameterType="Integer">
+delete from alertconfig where AlertConfigID=#{alertConfigID}
+</delete>
+
+<select id="viewOne" parameterType="Integer" resultType="com.swust.kelab.domain.AlertConfig">
+select AlertConfigID as alertConfigID,
+UserID as userID,
+ConfigTime as configTime,
+MonitorType as monitorType,
+IMEI as imei,
+IMSI as imsi,
+LogicCondition as logicCondition,
+AreaType as AreaType,
+LongitudeA as longitudeA,
+LongitudeB as longitudeB,
+LatitudeA as latitudeA,
+LatitudeB as latitudeB,
+LongitudeCenter as longitudeCenter,
+LatitudeCenter as latitudeCenter,
+Radius as radius,
+AreaID as areaID,
+PushFlag as pushFlag
+from alertconfig
+where
+AlertConfigID=#{alertConfigID}
+</select>
+
+<select id="selectList" parameterType="Integer" resultType="com.swust.kelab.domain.AlertConfig">
+select AlertConfigID as alertConfigID,
+UserID as userID,
+ConfigTime as configTime,
+MonitorType as monitorType,
+IMEI as imei,
+IMSI as imsi,
+LogicCondition as logicCondition,
+AreaType as AreaType,
+LongitudeA as longitudeA,
+LongitudeB as longitudeB,
+LatitudeA as latitudeA,
+LatitudeB as latitudeB,
+LongitudeCenter as longitudeCenter,
+LatitudeCenter as latitudeCenter,
+Radius as radius,
+AreaID as areaID,
+PushFlag as pushFlag
+from alertconfig
+where
+UserID=#{userID}
+</select>
+
+</mapper>
+

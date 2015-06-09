@@ -1,0 +1,149 @@
+define(function (require, exports, module) {
+    var template = require('artTemplate');
+    var $$warnning_model = require('../map_warnning/warnning_model');
+    var map = {
+        init: function () {
+            // 百度地图API功能
+            var mp = new BMap.Map("myMap");    // 创建Map实例
+            var self = this;
+            mp.centerAndZoom(new BMap.Point(116.44933, 39.80576), 12);
+            mp.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+            mp.enableScrollWheelZoom(true);
+            self.marker(mp);
+            window.myMap = mp;
+        },
+        marker: function (mp) {
+            var self = this;
+            // 百度地图API功能
+            mp.panTo(new BMap.Point(116.3964,39.9093));
+
+            // 复杂的自定义覆盖物
+            function ComplexCustomOverlay(point, cfg){
+                this._point = point;
+                this._cfg = cfg;
+            }
+
+            ComplexCustomOverlay.prototype = new BMap.Overlay();
+
+            ComplexCustomOverlay.prototype.initialize = function(map){
+                var self = this,
+                    cfg = this._cfg;
+
+                this._map = map;
+
+                var overlayStyle = {
+                    background: 'url("../img/markers.png")',
+                    width: '22px',
+                    height: '29px',
+                    fontSize: '15px',
+                    position: 'absolute',
+                    color: '#fff',
+                    whiteSpace: 'pre-wrap',
+                    zIndex: BMap.Overlay.getZIndex(this._point.lat)
+                };
+
+                var div = this._div = document.createElement("div");
+                div.id = 'marker' + cfg.data.alertID;
+                div.className = 'marker' + cfg.alertConfigID;
+
+                for (var key in overlayStyle) {
+                    if (overlayStyle.hasOwnProperty(key)) {
+                        div.style[key] = overlayStyle[key];
+                    }
+                }
+
+                div.onmouseover = function () {
+                    div.style.backgroundPosition = '0 -34px';
+                };
+
+                div.onmouseout = function () {
+                    div.style.backgroundPosition = '0 0';
+                };
+
+
+                div.appendChild(document.createTextNode(' ' + this._cfg.index));
+
+                mp.getPanes().labelPane.appendChild(div);
+
+                return div;
+            };
+
+            ComplexCustomOverlay.prototype.draw = function(){
+                var map = this._map;
+                var pixel = map.pointToOverlayPixel(this._point);
+                this._div.style.left = pixel.x - 14 + "px";
+                this._div.style.top = pixel.y - 17 + "px";
+            };
+
+
+
+//            var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(116.407845,39.914101), {});
+
+            var temp,
+                cfg = {};
+            $$warnning_model.on('change:list', function () {
+                mp.clearOverlays();
+                window.polygon = [];
+                var data = this.get('list');
+                console.log(data);
+                if (data.data && data.data.totalCount > 0) {
+                    var items = data.data.items[0].data;
+                    _.each(items, function (vv, ii) {
+                        cfg.alertConfigID = vv.alertConfigID;
+                        cfg.pushFlag = vv.pushFlag;
+                        cfg.index = ii + 1;
+                        if (vv.longitudeA && vv.longitudeB && vv.latitudeB && vv.latitudeA) {
+                            temp = self.alertArea(vv.longitudeA, vv.latitudeA, vv.longitudeB, vv.latitudeB, vv.alertConfigID);
+                            window.polygon.push(temp);
+                            mp.addOverlay(temp);
+                        }
+
+                        if (vv.alertList.length) {
+                            _.each(vv.alertList, function (v, i) {
+                                if (i == 0) {
+                                    mp.panTo(new BMap.Point(v.longitudeBaidu, v.latitudeBaidu));
+                                }
+                                cfg.data = v;
+                                temp = new ComplexCustomOverlay(new BMap.Point(v.longitudeBaidu, v.latitudeBaidu), cfg);
+                                mp.addOverlay(temp);
+                            });
+                        }
+
+                    });
+                }
+            });
+//            mp.addOverlay(myCompOverlay);
+        },
+        alertArea: function (longitudeA, latitudeA, longitudeB, latitudeB, id) {
+            var polygon = new BMap.Polygon([
+                new BMap.Point(longitudeA,latitudeA),
+                new BMap.Point(longitudeA,latitudeB),
+                new BMap.Point(longitudeB,latitudeB),
+                new BMap.Point(longitudeB,latitudeA)
+            ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:1});
+
+            polygon.addEventListener('mouseover', function () {
+                $('.marker' + id).css({
+                    'background-position': '0 -72px',
+                    width: '25px',
+                    height: '36px',
+                    'font-size': '18px'
+                });
+                this.setFillOpacity(0.5);
+                this.setStrokeColor('red');
+            });
+            polygon.addEventListener('mouseout', function () {
+                $('.marker' + id).css({
+                    'background-position': '0 0',
+                    width: '22px',
+                    height: '29px',
+                    'font-size': '15px'
+                });
+                this.setFillOpacity(1);
+                this.setStrokeColor('blue');
+            });
+            return polygon;
+        }
+    };
+    module.exports = map;
+});

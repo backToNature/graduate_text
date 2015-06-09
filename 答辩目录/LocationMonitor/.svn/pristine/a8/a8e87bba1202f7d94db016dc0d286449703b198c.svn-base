@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>告警展示</title>
+    <link rel="Shortcut Icon" href="../img/favicon.ico" />
+    <link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../lib/bootstrap/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="../css/globle.css">
+    <link rel="stylesheet" href="../css/map.css">
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=vzvF14yeeF7rU65qPNGjqXXj"></script>
+    <!--加载鼠标绘制工具-->
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <link rel="stylesheet"
+          href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+
+
+</head>
+<body>
+<div class="globle_header map_header_wrapper">
+    <img class="globle_header_logo" src="../img/logo.png"> <span
+        class="globle_header_title">互联网应用作战指挥系统</span>
+    <ul class="globle_header_nav">
+        <!--common.js打印-->
+    </ul>
+</div>
+<div class="map_content">
+    <div class="list_content">
+        <div class="search_form" style="display: none;">
+            <div class="form-group">
+                <label for="search_IMEI">IMEI</label> <input type="text"
+                                                             class="form-control" id="search_IMEI" placeholder="请输入IMEI">
+            </div>
+            <div class="form-group">
+                <label for="search_IMSI">IMSI</label> <input type="text"
+                                                             class="form-control" id="search_IMSI" placeholder="请输入IMSI">
+            </div>
+            <div class="form-group">
+                <label for="add_time">时间</label> <input readonly type="text"
+                                                            class="form-control" id="add_time" placeholder="请输入时间">
+            </div>
+            <div class="form-group">
+                <label for="search_phone">告警方式</label> <input type="text"
+                                                            class="form-control" id="search_phone" placeholder="请输入告警方式">
+            </div>
+            <label class="radio-inline" for="Trajectory_true"> <input
+                    type="radio" name="Trajectory" id="Trajectory_true" value="1"
+                    checked="checked"> 推送
+            </label> <label class="radio-inline" for="Trajectory_false"> <input
+                type="radio" name="Trajectory" id="Trajectory_false" value="0">
+            不推送
+        </label>
+
+            <button id="form_search" style="width: 250px;margin: 10px 0;" class="btn btn-primary">添加</button>
+        </div>
+        <div class="search_status">
+            <p>
+                <span>显示告警条件 </span><i class="icon-chevron-down"
+                                       style="font-size: 14px;"></i>
+            </p>
+        </div>
+        <div class="map_warning">
+            <div class="show_data">
+                <ul>
+
+                </ul>
+                <script id="tpl_show_data" type="text/html">
+                    {{each data as value i}}
+                    <li>
+                        <p style="color: #00c;">告警条件</p>
+
+                        <p>IMEI： {{value.imei}}</p>
+
+                        <p>IMSI： {{value.imsi}}</p>
+
+                        <p>区域左下经纬度： {{value.longitudeA}},{{value.latitudeA}}</p>
+
+                        <p>区域右上经纬度： {{value.longitudeB}},{{value.latitudeB}}</p>
+
+                        <p>设置时间： {{value.configTime}}</p>
+
+                        <p><input type="radio" name="only_show" id="only{{value.objId}}" class="only_show"><label
+                                for="only{{value.ObjId}}">只展示此告警条件的数据</label></p>
+                    </li>
+                    {{/each}}
+                </script>
+            </div>
+            <div class="map_pagination">
+                    <span> <a id="pre_page" href="#">&lt上一页</a>
+                    </span> <input id="enter_page" type="text" value="1"> <span>/12</span> <span>
+                        <a id="next_page" href="#">下一页&gt</a>
+                    </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="map_list" id="myMap"></div>
+<div class="list-hide list-hide-right">
+    <i class="icon-chevron-left"></i>
+</div>
+<script src="../lib/seajs/sea-debug.js"></script>
+<script>
+    // Set configuration
+    seajs.config({
+        base: '../lib/',
+        alias: {
+            jquery: 'jQuery/jquery.min.js',
+            drawManager: 'baiduMap/BMapLib_DrawingManager.js',
+            SearchInfoWindow: 'baiduMap/SearchInfoWindow.js',
+            bootstrap: 'bootstrap/bootstrap.min.js',
+            datetimepicker: 'bootstrap/bootstrap-datetimepicker.js',
+            underscore: 'underscore/underscore.js',
+            backbone: 'backbone/backbone.js',
+            artTemplate: 'artTemplate/artTemplate.js'
+        }
+    });
+    seajs.use('underscore');
+    seajs.use('drawManager');
+    seajs.use('SearchInfoWindow');
+    // 入口
+    seajs.use('../js/map_warnning/init.js');
+    seajs.use('../js/common.js');
+</script>
+</body>
+</html>

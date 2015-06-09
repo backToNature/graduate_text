@@ -1,0 +1,31 @@
+package com.swust.kelab.service.engine;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+
+import com.swust.kelab.domain.Alert;
+
+public class SendAlertListener implements ItemWriteListener<ArrayList<Alert>> {
+
+	@Override
+	public void beforeWrite(List<? extends ArrayList<Alert>> items) {
+
+	}
+
+	@Override
+	public void afterWrite(List<? extends ArrayList<Alert>> items) {
+		System.out.println("Send #msg" + items.size());
+	}
+
+	@Override
+	public void onWriteError(Exception exception,
+			List<? extends ArrayList<Alert>> items) {
+		// TODO Auto-generated method stub
+
+	}
+}

@@ -1,0 +1,46 @@
+package com.swust.kelab.repos;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.swust.kelab.domain.User;
+import com.swust.kelab.repos.bean.ListQuery;
+
+@Repository("userDAO")
+public class UserDAO {
+	 private SqlSession sqlSession;
+	    @Autowired
+	    public void setSqlSession(SqlSession sqlSession) {
+	        this.sqlSession = sqlSession;
+	    }
+	    
+	//下面就是user表的具体操作
+	 public int addOneUser(User user) throws Exception{
+		 return this.sqlSession.insert("user.insertOne", user);
+	 }
+	 
+	 public List<User> queryList(Map query)throws Exception{
+		 return  this.sqlSession.selectList("user.selectList", query);
+	 }
+
+	public Integer countUsersNum(ListQuery queryMap)throws Exception {
+		 return  this.sqlSession.selectOne("user.selectCount", queryMap);
+	}
+
+	public List<User> viewLeaders(ListQuery queryMap)throws Exception {
+		// TODO Auto-generated method stubi
+		return this.sqlSession.selectList("user.selectByPage", queryMap);
+	}
+
+	public int deleteOneUser(int id)throws Exception {
+		return this.sqlSession.delete("user.deleteOne", id);
+	}
+	
+	public int updateOne(User user) throws Exception{
+		return this.sqlSession.update("user.updateOne",user);
+	}
+}

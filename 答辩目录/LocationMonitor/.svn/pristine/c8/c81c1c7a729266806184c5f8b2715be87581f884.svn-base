@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="alertConfigMapper">
+<insert id="insertOne" parameterType="com.swust.kelab.domain.AlertConfig">
+insert into alertconfig(UserID,ConfigTime,IMEI,IMSI,
+LongitudeA,LongitudeB,LatitudeA,LatitudeB,PushFlag) 
+values 
+(#{userID},#{configTime},#{imei},#{imsi},
+#{longitudeA},#{longitudeB},#{latitudeA},#{latitudeB},#{pushFlag})
+</insert>
+
+<delete id="deleteOne" parameterType="Integer">
+delete from alertconfig where AlertConfigID=#{alertConfigID}
+</delete>
+
+<select id="countConfigNum" parameterType="Map" resultType="Integer">
+select count(*)
+from alertconfig
+where userID=#{userID}
+</select>
+
+<select id="queryConfigs" parameterType="Map" resultType="com.swust.kelab.model.ConfigAlertModel">
+select AlertConfigID as alertConfigID,
+ConfigTime as configTime,
+MonitorType as monitorType,
+IMEI as imei,
+IMSI as imsi,
+LongitudeA as longitudeA,
+LongitudeB as longitudeB,
+LatitudeA as latitudeA,
+LatitudeB as latitudeB,
+PushFlag as pushFlag
+from alertconfig
+where
+UserID=#{userID}
+order by ConfigTime desc
+limit #{startIndex},#{maxCount}
+</select>
+
+<select id="queryAlertList" parameterType="Map" resultType="com.swust.kelab.domain.Alert">
+select
+AlertID as alertID,
+AlertConfigID as alertConfigID,
+IMEI as imei,
+IMSI as imsi,
+PosTime as posTime,
+LongitudeBaidu as longitudeBaidu,
+LatitudeBaidu as latitudeBaidu,
+PhoneType as phoneType,
+AppType as appType,
+AlertState as alertState,
+PushState as pushState
+from alert 
+where
+AlertConfigID=#{alertConfigID}
+order by PosTime desc
+<if test="startIndex!=null and maxCount!=null">
+limit #{startIndex}, #{maxCount}
+</if>
+</select>
+
+<delete id="deleteAlerts" parameterType="Integer">
+delete from alert where AlertConfigID=#{alertConfigID}
+</delete>
+
+<select id="selectAlertCount" parameterType="Integer" resultType="Integer">
+select count(*)
+from alert
+where alertConfigID=#{alertConfigID}
+</select>
+
+</mapper>
+

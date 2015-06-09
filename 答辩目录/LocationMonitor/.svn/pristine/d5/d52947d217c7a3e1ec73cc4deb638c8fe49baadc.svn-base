@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="account">
+	<select id="selectAll" resultType="Account">
+		select 
+			acco_id as accoId,acco_weiboNum as weiboNum,acco_commentNum as commentNum,
+			acco_repostNum as repostNum,acco_totalWeiboNum as totalWeiboNum,
+			acco_attationNum as attationNum,acco_fansNum as fansNum,
+			acco_mutualNum as mutualNum
+        from Account
+	</select>
+	
+	<update id="reset">
+		update Account set acco_leaderRank=0
+	</update>
+	
+	<update id="setLeaderRank" parameterType="map">
+		update Account set acco_leaderRank=#{rank} where acco_id=#{accoId}
+	</update>
+	
+	<select id="countLeadersNum" resultType="Integer">
+		select count(*) from Account where acco_leaderRank>0
+	</select>
+	
+	<select id="viewLeaders" resultType="Account">
+		select 
+			acco_id as accoId,acco_leaderRank as leaderRank,
+			acco_weiboNum as weiboNum,acco_nickname as nickname,
+			acco_totalWeiboNum as totalWeiboNum,
+			acco_fansNum as fansNum,acco_attationNum as attationNum
+		from Account
+			where acco_leaderRank>0
+			order by acco_leaderRank
+	</select>
+	
+	<select id="viewOneLeader" parameterType="map" resultType="Account">
+		select 
+			acco_id as accoId,acco_nickname as nickname,
+			acco_leaderRank as leaderRank,acco_weiboNum as weiboNum,
+			acco_commentNum as commentNum,acco_repostNum as repostNum,
+			acco_totalWeiboNum as totalWeiboNum,acco_attationNum as attationNum,
+			acco_fansNum as fansNum,acco_mutualNum as mutualNum,
+			acco_verify as verify
+        from Account
+        	where acco_id=#{_parameter}
+	</select>
+	
+	<select id="countUsersNum" resultType="Integer">
+		select count(*) from Account
+	</select>
+</mapper>

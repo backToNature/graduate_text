@@ -1,0 +1,57 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>意见领袖-列表页面</title>
+<link rel="stylesheet" href="../css/bootstrap.css" />
+<link rel="stylesheet" href="../css/isearch4-resp.css" />
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="navbar navbar-inverse navbar-fixed-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<div class="nav-collapse collapse" style="color: #fff;">
+								<h1>意见领袖挖掘</h1>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+<div class="span12"></div>
+			<div class="span12">
+			<a style="float:right ;" href="home.html"  id="bbs"><i
+			class="icon-arrow-left "></i>返回</a>
+				<h3 class="page-header">意见领袖列表</h3>
+				
+				<table id="leadersList" class="table table-bordered">
+					<thead>
+						<tr>
+							<th>排名</th>
+							<th>昵称</th>
+							<th>总微博数</th>
+							<th>话题微博数</th>
+							<th>粉丝数</th>
+							<th>关注数</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+				<!-- 分页区域 -->
+				<div id="pagination" class="pagination pagination-right"></div>
+			</div>
+		</div>
+	</div>
+	<div id="footer"> </div>
+</body>
+<script src="../js/ext/jquery-1.8.3.js"></script>
+<script src="../js/ext/bootstrap.js"></script>
+<script type="text/javascript" src="../js/ext/extend.js"></script>
+<script src="../js/cachepage.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/leaders.js"></script>
+</html>

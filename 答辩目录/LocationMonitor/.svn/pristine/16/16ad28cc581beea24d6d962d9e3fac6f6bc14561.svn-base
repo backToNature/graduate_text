@@ -1,0 +1,53 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+    var list = {
+        init: function () {
+            var self = this;
+            $(function () {
+                var listWarpper = $('.show_data '),
+                    id;
+
+//                listWarpper.delegate('ul li', 'click', function () {
+//                    id = $(this)[0].id;
+//                    $('#marker' + id).trigger('click');
+//                });
+
+                listWarpper.delegate('ul li', 'mouseover', function () {
+                    id = $(this)[0].id;
+                    $('#marker' + id).trigger('mouseover');
+                });
+
+                listWarpper.delegate('ul li', 'mouseout', function () {
+                    id = $(this)[0].id;
+                    $('#marker' + id).trigger('mouseout');
+                });
+                self.only();
+            });
+        },
+        only: function () {
+            /**
+             * 只展示某个对象的点
+             */
+            $('.only_show').change(function () {
+                var index = $(this).closest('li').attr('data-index');
+                _.each(window.polylineArr, function (val ,inde) {
+                    if (inde != index) {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.hide();
+                        });
+                        val.hide();
+                    } else {
+                        _.each(window.myCompOverlayArr[inde], function (v, i) {
+                            v.show();
+                        });
+                        val.show();
+                    }
+                });
+
+            });
+        }
+    };
+    module.exports = list;
+});
+

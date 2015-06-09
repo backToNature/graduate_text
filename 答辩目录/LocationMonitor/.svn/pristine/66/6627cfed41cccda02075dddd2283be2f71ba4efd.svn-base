@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <title>地图展示</title>
+    <link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="all" href="../lib/bootstrap/daterangepicker-bs3.css" />
+    <script type="text/javascript" src="../lib/bootstrap/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap/moment.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap/daterangepicker.js"></script>
+    <link rel="stylesheet" href="../css/globle.css">
+    <link rel="stylesheet" href="../css/map.css">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=vzvF14yeeF7rU65qPNGjqXXj"></script>
+</head>
+<body>
+    <div class="globle_header map_header_wrapper">
+        <img class="globle_header_logo" src="../img/logo.png">
+        <span class="globle_header_title">互联网作战指挥系统</span>
+        <ul class="globle_header_nav">
+            <li class="nav_current">
+                <a href="#">地图展示</a>
+            </li>
+            <li>·</li>
+            <li>
+                <a href="#">告警展示</a>
+            </li>
+            <li>·</li>
+            <li>
+                <a href="#">表格展示</a>
+            </li>
+            <li>·</li>
+            <li>
+                <a href="#">告警管理</a>
+            </li>
+            <li>·</li>
+            <li>
+                <a href="#" class="globle_open_list">数据管理</a>
+            </li>
+            <li>·</li>
+            <li>
+                <a href="#" class="globle_open_list">系统管理</a>
+                <div class="globle_header_nav_option">
+                    <p><a href="#">告警设置</a></p>
+                    <p><a href="#">告警展示</a></p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="map_content">
+        <div class="list_content">
+            <div class="list_filter">
+                <ul class="list_filter_ul">
+                    <li>
+                        <label>时间段</label>
+                        <input readonly="readonly" id="time" style="border: 1px solid #09e;width: 98px;height: 38px;" type="text" placeholder="请输入时间段">
+                    </li>
+                    <li>
+                        <label>区域</label>
+                        <input style="border: 1px solid #09e;width: 98px;height: 38px;" type="text" placeholder="请选择区域">
+                    </li>
+                    <li>
+                        <label>关键字</label>
+                        <input type="text" placeholder="请输入关键字">
+                    </li>
+                    <li style="margin-left: 20px;">
+                        <label>查询</label>
+                        <input type="button" value="查询" class="blue_button" style="width: 100px;">
+                    </li>
+                </ul>
+                <div style="clear: both;"></div>
+            </div>
+            <div style="font-size: 20px;background-color: #2C3E50;height: 40px;text-align: center;position: relative;">
+                <span style="color: #fff;line-height: 40px;letter-spacing: 5px;">共找到1000对象</span>
+                <img style="height: 20px;position: absolute;top: 11px;" src="../img/jiantou.png">
+            </div>
+            <div class="map_warning">
+                <div class="real_data">
+                    <span style="font-size:30px;width: 40%;float: left;color: #09e;">1000</span>
+                    <span style="font-size:30px;width: 30%;float: left;color: #f33;">31</span>
+                    <span style="font-size:30px;width: 30%;float: left;color: #699f00;">52</span>
+                    <span style="font-size:12px;width: 40%;float: left;color: #bdc3c7;">新增对象</span>
+                    <span style="font-size:12px;width: 30%;float: left;color: #bdc3c7;">新增告警</span>
+                    <span style="font-size:12px;width: 30%;float: left;color: #bdc3c7;">待解决告警</span>
+                    <div style="clear: both;"></div>
+                </div>
+                <div class="show_data">
+
+                    <ul>
+                        <li>
+                            <div class="marker marker_red">&nbsp;A</div>
+                            <p style="color: #00c;">郭豪</p>
+                            <p>地区： 四川省绵阳市涪城区西南科技大学新区</p>
+                            <p>IMEI： 123456789012345</p>
+                            <p>IMSI： 123456789012345</p>
+                            <p>电话： 1301234567</p>
+                            <p>时间： 2014/9/1 14:30</p>
+                        </li>
+                        <li>
+                            <div class="marker marker_red">&nbsp;B</div>
+                            <p style="color: #00c;">郭豪</p>
+                            <p>地区： 四川省绵阳市涪城区西南科技大学新区</p>
+                            <p>IMEI： 123456789012345</p>
+                            <p>IMSI： 123456789012345</p>
+                            <p>电话： 1301234567</p>
+                            <p>时间： 2014/9/1 14:30</p>
+                        </li>
+                        <li>
+                            <div class="marker marker_red">&nbsp;C</div>
+                            <p style="color: #00c;">郭豪</p>
+                            <p>地区： 四川省绵阳市涪城区西南科技大学新区</p>
+                            <p>IMEI： 123456789012345</p>
+                            <p>IMSI： 123456789012345</p>
+                            <p>电话： 1301234567</p>
+                            <p>时间： 2014/9/1 14:30</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="map_pagination">
+                    <span>
+                        <a href="#"><上一页</a>
+                    </span>
+                    <input type="text" value="11">
+                    <span>/13</span>
+                    <span>
+                        <a href="#" >下一页></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="map_list" id="myMap"></div>
+    </div>
+    <div class="footer">
+        <div class="footer_border_left"></div>
+        <img class="footer_border_center" src="../img/bottom_center.png">
+        <div class="footer_border_right"></div>
+        <p>遂宁市公安局 地址:和平西路186 邮政编码:629000 </p>
+        <p>推荐使用浏览器IE8（及以上）</p>
+        <p>版权所有 遂宁市公安局</p>
+    </div>
+    <script src="../js/map.js"></script>
+</body>
+</html>

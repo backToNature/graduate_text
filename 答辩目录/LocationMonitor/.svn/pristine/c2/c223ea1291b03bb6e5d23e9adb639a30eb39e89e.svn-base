@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<title>地图展示</title>
+<link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all"
+	href="../lib/bootstrap/daterangepicker-bs3.css" />
+<link rel="stylesheet" href="../css/globle.css">
+<link rel="stylesheet" href="../css/map.css">
+<script type="text/javascript"
+	src="http://api.map.baidu.com/api?v=2.0&ak=vzvF14yeeF7rU65qPNGjqXXj"></script>
+    <!--加载鼠标绘制工具-->
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+<script type="text/javascript"
+	src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+<link rel="stylesheet"
+	href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+</head>
+<body>
+	<div class="globle_header map_header_wrapper">
+		<img class="globle_header_logo" src="../img/logo.png"> <span
+			class="globle_header_title">互联网应用作战指挥系统</span>
+		<ul class="globle_header_nav">
+			<!--common.js打印-->
+		</ul>
+	</div>
+	<div class="map_content">
+		<div class="list_content">
+			<div class="search_form" style="display: none;">
+				<div class="form-group">
+					<label for="search_IMEI">IMEI</label> <input type="text"
+						class="form-control" id="search_IMEI" placeholder="请输入IMEI">
+				</div>
+				<div class="form-group">
+					<label for="search_IMSI">IMSI</label> <input type="text"
+						class="form-control" id="search_IMSI" placeholder="请输入IMSI">
+				</div>
+				<div class="form-group">
+					<label for="search_time">时间段</label> <input type="text"
+						class="form-control" id="search_time" placeholder="请输入时间段">
+				</div>
+				<div class="form-group" style="position:relative;" id="selectCity">
+					<label for="search_place">区域</label><input class="form-control"
+						id="search_place" type="text" placeholder="请选择区域" />
+					<div
+						style="width:250px;display:none;position:absolute;z-index:3000;top:60px;left:0px;"
+						id="cityList" class="panel panel-primary">
+						<div style="height:10%;width:100%;" class="panel-heading">
+							<span id="hotcity" class="panel-title"><a href="#">
+									&nbsp;热门</a></span> <span id="a_d" class="panel-title  "><a
+								href="#">&nbsp;ABCD</a></span> <span id="e_j" class="panel-title  "><a
+								href="#">&nbsp;EFGHJ</a></span> <span id="k_n" class="panel-title  "><a
+								href="#">&nbsp;KLMN</a></span> <span id="p_w" class="panel-title  "><a
+								href="#">&nbsp;PQRSTW</a></span> <span id="x_z" class="panel-title  "><a
+								href="#">&nbsp;XYZ</a></span>
+						</div>
+						<div style="height:90%;width:100%;" id="cityName"
+							class="panel-body"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="search_phone">电话</label> <input type="text"
+						class="form-control" id="search_phone" placeholder="请输入手机号">
+				</div>
+				<label class="radio-inline" for="Trajectory_true"> <input
+					type="radio" name="Trajectory" id="Trajectory_true" value="1"
+					checked="checked"> 展示轨迹
+				</label> <label class="radio-inline" for="Trajectory_false"> <input
+					type="radio" name="Trajectory" id="Trajectory_false" value="0">
+					不展示轨迹
+				</label>
+
+				<button style="width: 250px;margin: 10px 0;" class="btn btn-primary">查询</button>
+			</div>
+			<div class="search_status">
+				<p>
+					<span>显示查询条件 </span><i class="icon-chevron-down"
+						style="font-size: 14px;"></i>
+				</p>
+			</div>
+			<div class="map_warning">
+
+				<div class="show_data">
+					<ul>
+						<script id="obj_list" type="text/html">
+                        {{each items as value i}}
+                        <li id="{{value.ObjId}}" data-index="{{i}}">
+                            <div class="marker marker_red">&nbsp;{{i + 1}}</div>
+                            <p style="color: #00c;">{{value.name}}</p>
+
+                            <p>地区： 四川省绵阳市涪城区西南科技大学新区</p>
+
+                            <p>IMEI： {{value.IMEI}}</p>
+
+                            <p>IMSI： {{value.IMSI}}</p>
+
+                            <p>电话： {{value.phone}}</p>
+
+                            <p>时间： {{value.time}}</p>
+
+                            <p><input type="radio" name="only_show" id="only{{value.ObjId}}" class="only_show"><label
+                                    for="only{{value.ObjId}}">只展示此对象</label></p>
+                        </li>
+                        {{/each}}
+                    </script>
+					</ul>
+				</div>
+				<div class="map_pagination">
+					<span> <a href="#">&lt上一页</a>
+					</span> <input type="text" value="11"> <span>/13</span> <span>
+						<a href="#">下一页&gt</a>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="map_list" id="myMap"></div>
+	<div class="list-hide list-hide-right">
+		<i class="icon-chevron-left"></i>
+	</div>
+	<script src="../lib/seajs/sea-debug.js"></script>
+	<script>
+    // Set configuration
+    seajs.config({
+        base: '../lib/',
+        alias: {
+            jquery: 'jQuery/jquery.min.js',
+            bootstrap: 'bootstrap/bootstrap.min.js',
+            moment: 'bootstrap/moment.min.js',
+            daterangepicker: 'bootstrap/daterangepicker.js',
+            underscore: 'underscore/underscore.js',
+            backbone: 'backbone/backbone.js',
+            artTemplate: 'artTemplate/artTemplate.js'
+        }
+    });
+    seajs.use('underscore');
+
+    // 入口
+    seajs.use('../js/map_query/init.js');
+    seajs.use('../js/common.js');
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    var $$warnning_model = require('../map_warnning/warnning_model');
+    require('jquery');
+    var template = require('artTemplate');
+    var list = {
+        init: function () {
+            var self = this;
+            $(function () {
+//                self.left_list();
+                self.slide();
+            });
+        },
+        left_list: function () {
+
+        },
+        slide: function () {
+            $('.search_status').on('click', function () {
+                var icon = $('.search_status p i');
+                $('.search_form').slideToggle();
+                if (icon.hasClass('icon-chevron-up')) {
+                    $('.search_status p span').text('显示告警条件 ');
+                } else {
+                    $('.search_status p span').text('隐藏告警条件 ');
+                }
+                icon.toggleClass('icon-chevron-up');
+                icon.toggleClass('icon-chevron-down');
+            });
+        }
+
+    };
+    module.exports = list;
+});

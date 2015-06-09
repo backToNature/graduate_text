@@ -1,0 +1,246 @@
+define(function (require, exports, module) {
+    var $$map_model = require('../map_query/map_model');
+    var template = require('artTemplate');
+    var map = {
+        init: function () {
+            // 百度地图API功能
+
+            var mp = new BMap.Map("myMap");    // 创建Map实例
+            mp.centerAndZoom(new BMap.Point(116.44933, 39.80576), 12);
+            mp.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+            mp.enableScrollWheelZoom(true);
+            // 添加覆盖物
+            this.marker(mp);
+            // 添加控件
+            this.control(mp);
+            // 添加右键菜单
+            this.menu(mp);
+
+            window.myMap = mp;
+        },
+        drawArea: function (mp) {
+            if (window.area) {
+                window.param.longitudeA = null;
+                window.param.latitudeA = null;
+                window.param.longitudeB = null;
+                window.param.latitudeB = null;
+                mp.removeOverlay(area);
+            }
+            //实例化鼠标绘制工具
+            var styleOptions = {
+                strokeColor:"red",    //边线颜色。
+                fillColor:"red",      //填充颜色。当参数为空时，圆形将没有填充效果。
+                strokeWeight: 3,       //边线的宽度，以像素为单位。
+                strokeOpacity: 0.8,	   //边线透明度，取值范围0 - 1。
+                fillOpacity: 0.6,      //填充的透明度，取值范围0 - 1。
+                strokeStyle: 'solid' //边线的样式，solid或dashed。
+            };
+            var drawingManager = new BMapLib.DrawingManager(mp, {
+                isOpen: false, //是否开启绘制模式
+                enableDrawingTool: true, //是否显示工具栏
+                drawingToolOptions: {
+                    anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+                    offset: new BMap.Size(130, 5), //偏离值
+                    drawingModes: [] // 默认可绘制的图形
+                }
+//                circleOptions: styleOptions //圆的样式
+            });
+//            drawingManager.enableCalculate();
+            drawingManager.setDrawingMode(BMAP_DRAWING_RECTANGLE);
+            drawingManager.open();
+            drawingManager.addEventListener('overlaycomplete', function (e){
+                var area = e.overlay,
+                    bounds = area.getBounds(),
+                    sw = bounds.getSouthWest(), // 西南角经纬度
+                    ne = bounds.getNorthEast(); // 东北角经纬度
+                window.param.longitudeA = sw.lng;
+                window.param.latitudeA = sw.lat;
+                window.param.longitudeB = ne.lng;
+                window.param.latitudeB = ne.lat;
+                $$map_model.search(window.param);
+                window.area = area;
+                this.close();
+            });
+
+        },
+        menu: function (mp) {
+            // 右键菜单
+            var menu = new BMap.ContextMenu(),
+                self = this;
+            var txtMenuItem = [
+                {
+                    text: '绘制矩形',
+                    callback: function () {
+                        self.drawArea(mp);
+                    }
+                }
+            ];
+            for (var i = 0; i < txtMenuItem.length; i++) {
+                menu.addItem(new BMap.MenuItem(txtMenuItem[i].text, txtMenuItem[i].callback, 0));
+            }
+            mp.addContextMenu(menu);
+        },
+        control: function (mp) {
+            // 添加控件
+            mp.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+            mp.addControl(new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT}));
+            mp.addControl(new BMap.NavigationControl());
+            mp.addControl(new BMap.OverviewMapControl({isOpen: true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT}));
+        },
+        toFloat: function (num, index) {
+            var str = num.toString(),
+                str1 = str.substring(0, index),
+                str2 = str.substring(index);
+//            return parseFloat(str1 + '.' + str2);
+            return num;
+        },
+        marker: function (mp) {
+            var self = this;
+            // 复杂的自定义覆盖物
+            function ComplexCustomOverlay(point, cfg) {
+                this._point = point;
+                this._cfg = cfg;
+            }
+
+            ComplexCustomOverlay.prototype = new BMap.Overlay();
+
+            ComplexCustomOverlay.prototype.initialize = function (map) {
+                var self = this,
+                    cfg = this._cfg;
+
+                this._map = map;
+                var geoc = new BMap.Geocoder();
+
+                var searchInfoWindow = null;
+
+                geoc.getLocation(this._point, function(rs){
+                    var addComp = rs.addressComponents;
+                    var tittle = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+                    var contentTpl = '<div style="margin:0;line-height:20px;padding:2px;">' +
+                        '经度：{{data.longitude}}' +
+                        '<br/>纬度：{{data.latitude}}' +
+                        '<br/>时间：{{data.time}}' +
+                        '</div>';
+                    var render = template.compile(contentTpl);
+                    var html = render(cfg);
+                    //创建检索信息窗口对象
+                    searchInfoWindow = new BMapLib.SearchInfoWindow(map, html, {
+                        title: tittle,      //标题
+                        width: 290,             //宽度
+                        height: 85,              //高度
+                        panel: "panel",         //检索结果面板
+                        enableAutoPan: true,     //自动平移
+                        searchTypes: [
+                            BMAPLIB_TAB_SEARCH,   //周边检索
+                            BMAPLIB_TAB_TO_HERE,  //到这里去
+                            BMAPLIB_TAB_FROM_HERE //从这里出发
+                        ]
+                    });
+                });
+
+
+                var overlayStyle = {
+                    background: 'url("../img/markers.png")',
+                    width: '22px',
+                    height: '29px',
+                    fontSize: '15px',
+                    position: 'absolute',
+                    color: '#fff',
+                    whiteSpace: 'pre-wrap',
+                    zIndex: BMap.Overlay.getZIndex(this._point.lat)
+                };
+                var div = this._div = document.createElement("div");
+                div.id = 'marker' + cfg.data.DataId;
+                div.className = 'mark' + cfg.ObjId;
+
+                div.appendChild(document.createTextNode(' ' + this._cfg.index));
+
+                for (var key in overlayStyle) {
+                    if (overlayStyle.hasOwnProperty(key)) {
+                        div.style[key] = overlayStyle[key];
+                    }
+                }
+                div.onclick = function () {
+                    searchInfoWindow.open(self._point);
+
+                };
+
+                div.onmouseover = function () {
+                    div.style.backgroundPosition = '0 -34px';
+                };
+
+                div.onmouseout = function () {
+                    div.style.backgroundPosition = '0 0';
+                };
+
+                mp.getPanes().labelPane.appendChild(div);
+                return div;
+            };
+
+            ComplexCustomOverlay.prototype.draw = function () {
+                var map = this._map;
+                var pixel = map.pointToOverlayPixel(this._point);
+                this._div.style.left = pixel.x - 14 + "px";
+                this._div.style.top = pixel.y - 17 + "px";
+            };
+
+
+            $$map_model.on('change:list', function () {
+                if (window.polylineArr && window.myCompOverlayArr) {
+                    _.each(window.polylineArr, function (val, index) {
+                        myMap.removeOverlay(val);
+                    });
+                    _.each(window.myCompOverlayArr, function (v, i) {
+                        _.each(v, function (vv, ii) {
+                            myMap.removeOverlay(vv);
+                        });
+                    });
+                }
+                var data = this.get('list'),
+                    cfg = {},
+                    locus = [],
+                    polyline,
+                    polylineArr = [],
+                    myCompOverlay,
+                    myCompOverlaySet = [],
+                    myCompOverlayArr = [],
+                    color = ['#00c', '#093', '#306', '#3cc', '#669', '#663'];
+                if (data.data.totalCount == 0 || !data.data) {
+                    return;
+                }
+                _.each(data.data.items[0].data, function (val, index) {
+                    cfg.index = index + 1;
+                    cfg.name = val.name;
+                    cfg.IMEI = val.imei;
+                    cfg.IMSI = val.imsi;
+                    cfg.phone = val.phone;
+                    cfg.ObjId = val.objId;
+                    cfg.time = val.time;
+                    _.each(val.items, function (v, ind) {
+                        if (ind == 0 && val.items.length != 1) {
+                            cfg.index = 'S';
+                        } else if (ind == val.items.length - 1 && val.items.length != 1) {
+                            cfg.index = 'E';
+                        } else {
+                            cfg.index = index + 1;
+                        }
+                        locus.push(new BMap.Point(self.toFloat(v.longitude, 3), self.toFloat(v.latitude, 2)));
+                        cfg.data = v;
+                        myCompOverlay = new ComplexCustomOverlay(new BMap.Point(self.toFloat(v.longitude, 3), self.toFloat(v.latitude, 2)), cfg);
+                        mp.addOverlay(myCompOverlay);
+                        myCompOverlaySet.push(myCompOverlay);
+                    });
+                    myCompOverlayArr.push(myCompOverlaySet);
+                    myCompOverlaySet = [];
+                    polyline = new BMap.Polyline(locus, {strokeColor: color[index], strokeWeight: 2, strokeOpacity: 0.5});
+                    mp.addOverlay(polyline);
+                    polylineArr.push(polyline);
+                    locus = [];
+                });
+                window.polylineArr = polylineArr;
+                window.myCompOverlayArr = myCompOverlayArr;
+            });
+        }
+    };
+    module.exports = map;
+});

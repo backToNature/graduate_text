@@ -1,0 +1,61 @@
+define(function (require, exports, module){
+	require('jquery');
+	require('highcharts');
+	//告警表格统计
+	$('#container').highcharts({
+	        chart: {
+	            type: 'column'
+	        },
+	        title: {
+	            text: '周告警情况统计表'
+	        },
+	        subtitle: {
+	            text: ''
+	        },
+	        xAxis: {
+	            categories: [
+	                '2015-04-06',
+	                '2015-04-07',
+	                '2015-04-08',
+	                '2015-04-09',
+	                '2015-04-10',
+	                '2015-04-11',
+	                '2015-04-12'               
+	            ]
+	        },
+	        yAxis: {
+	            min: 0,
+	            title: {
+	                text: '告警数目 (条)'
+	            }
+	        },
+	        tooltip: {
+	            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+	            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+	                '<td style="padding:0"><b>{point.y:.0f} mm</b></td></tr>',
+	            footerFormat: '</table>',
+	            shared: true,
+	            useHTML: true
+	        },
+	        plotOptions: {
+	            column: {
+	                pointPadding: 0.2,
+	                borderWidth: 0
+	            }
+	        },
+	        series: [{
+	            name: '告警总条数',
+	            data: [10, 12, 7, 12, 14, 17, 13]
+
+	        }, {
+	            name: '已处理告警数',
+	            data: [3, 6, 4, 9, 10, 8, 10]
+
+	        }, {
+	            name: '未处理告警数',
+	            data: [7, 6, 3, 3, 4, 9, 3]
+
+	        }]
+	    });
+});
+

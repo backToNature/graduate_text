@@ -1,0 +1,44 @@
+package com.swust.kelab.domain;
+
+public class AlertData {
+	private String strTime[];
+	public String[] getStrTime() {
+		return strTime;
+	}
+	public void setStrTime(String[] strTime) {
+		this.strTime = strTime;
+	}
+	private Integer series[];
+	private Integer series_resolved[];
+	private Integer series_n_resolve[];
+	
+	
+	
+
+
+
+	public Integer[] getSeries() {
+		return series;
+	}
+	public void setSeries(Integer[] series) {
+		this.series = series;
+	}
+	public Integer[] getSeries_resolved() {
+		return series_resolved;
+	}
+	public void setSeries_resolved(Integer[] series_resolved) {
+		this.series_resolved = series_resolved;
+	}
+	public Integer[] getSeries_n_resolve() {
+		return series_n_resolve;
+	}
+	public void setSeries_n_resolve(Integer[] series_n_resolve) {
+		this.series_n_resolve = series_n_resolve;
+	}
+	public void setTime(String[] s) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}

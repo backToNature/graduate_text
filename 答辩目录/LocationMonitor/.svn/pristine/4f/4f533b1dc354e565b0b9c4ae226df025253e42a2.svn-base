@@ -1,0 +1,87 @@
+package com.swust.kelab.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.swust.kelab.domain.LocationSimple;
+import com.swust.kelab.model.ObjModel;
+import com.swust.kelab.repos.LocationQueryDAO;
+
+@Service("locationQueryService")
+public class LocationQueryService {
+	@Autowired
+	private LocationQueryDAO locationQueryDAO;
+	private List<LocationSimple> items = new ArrayList<LocationSimple>();
+	private List<ObjModel> objects;
+	public List<ObjModel> query(ObjModel objm) {
+		
+		String imei = objm.getIMEI();
+		String imsi = objm.getIMSI();
+		String phone = objm.getPhone();
+		String time = objm.getTime();
+		
+		if((imei==null||imei=="")&&(imsi==null||imsi=="")&&(phone==null||phone=="")){
+			return null;
+		}
+		
+		//查询符合条件的对象
+		objects = locationQueryDAO.queryObjects(objm);
+		//调试用
+		if (objects!=null){
+			System.out.println("objects success");
+			System.out.println("objectsize:"+objects.size());
+		}
+		
+		
+		Iterator iter = objects.iterator();
+		int objId = 0;
+		//查询每一个对象对应的地理位置
+		while(iter.hasNext()){
+			ObjModel obj = (ObjModel) iter.next();
+			obj.setObjId(++objId);
+			System.out.println("objID:" + objId + "\nobjname:"+ obj.getName());
+			if(time!=null&&time!=""){
+				String dateStr[] = time.split(" - ");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/ HH:mm");
+				try {
+					obj.setDateStart(sdf.parse(dateStr[0]));
+					obj.setDateEnd(sdf.parse(dateStr[1]));
+				} catch (ParseException e) {
+					e.printStackTrace();
+					System.out.println("时间转化异常");
+					return null;
+				}
+			}
+			
+			items = locationQueryDAO.queryLocation(obj);
+			System.out.println("itemssize:"+items.size());
+			if(items.size()==0){
+				return null;
+			}else{
+				Iterator iteri = items.iterator();
+				int dataId = 0;
+				while(iteri.hasNext()){
+					LocationSimple location = (LocationSimple) iteri.next();
+					location.setTime(location.getTimeDate());
+					location.setTimeDate(null);
+					location.setDataId(++dataId);
+				}
+				obj.setItems(items);
+				//设置返回的时间段
+				time = items.get(0).getTime() + " - " + items.get(items.size()-1).getTime();
+				System.out.println(time);
+				obj.setTime(time);
+	
+				obj.setDateStart(null);
+				obj.setDateEnd(null);
+			}
+			
+		}
+		return objects;
+	}
+
+}

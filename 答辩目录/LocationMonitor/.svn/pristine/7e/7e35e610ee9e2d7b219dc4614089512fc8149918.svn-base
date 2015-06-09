@@ -1,0 +1,54 @@
+package com.swust.kelab.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.Location;
+import com.swust.kelab.domain.LocationRaw;
+import com.swust.kelab.domain.User;
+import com.swust.kelab.repos.LocationDAO;
+
+@Service("LocationService")
+public class LocationService {
+	@Autowired
+	private LocationDAO locationDAO;
+
+	public int add(Location location) throws Exception {
+		return locationDAO.add(location);
+
+	}
+
+	public int delete(Location location) throws Exception {
+		return locationDAO.delete(location);
+	}
+
+	public int updateOne(Location location) {
+		return locationDAO.update(location);
+
+	}
+
+	public Location selectIMEI(String imei) {
+		return locationDAO.selectIMEI(imei);
+
+	}
+
+	public Location selectIMSI(String imsi) {
+		return locationDAO.selectIMSI(imsi);
+
+	}
+
+	/**
+	 * 
+	 * @description 将来自数据采集端的位置数据写入分析端的location, imsi, imei, objectinfor四张表
+	 * @author libo
+	 * @date 2015年4月19日 下午4:04:04
+	 *
+	 * @param item
+	 *            来自数据采集端的位置数据
+	 * @return 是否写入成功
+	 */
+	public boolean importLocation(LocationRaw item) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+}

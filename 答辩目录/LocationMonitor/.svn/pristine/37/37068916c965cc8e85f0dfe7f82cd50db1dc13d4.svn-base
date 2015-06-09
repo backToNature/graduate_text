@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<title>地图展示</title>
+<link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all"
+	href="../lib/bootstrap/daterangepicker-bs3.css" />
+<link rel="stylesheet" href="../css/globle.css">
+<link rel="stylesheet" href="../css/map.css">
+<script type="text/javascript"
+	src="http://api.map.baidu.com/api?v=2.0&ak=vzvF14yeeF7rU65qPNGjqXXj"></script>
+    <!--加载鼠标绘制工具-->
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <link rel="stylesheet"
+          href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+<script type="text/javascript"
+	src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+
+
+</head>
+<body>
+	<div class="globle_header map_header_wrapper">
+		<img class="globle_header_logo" src="../img/logo.png"> <span
+			class="globle_header_title">互联网应用作战指挥系统</span>
+		<ul class="globle_header_nav">
+			<!--common.js打印-->
+		</ul>
+	</div>
+	<div class="map_content">
+		<div class="list_content">
+			<div class="search_form" style="display: none;">
+				<div class="form-group">
+					<label for="search_IMEI">IMEI</label> <input type="text"
+						class="form-control" id="search_IMEI" placeholder="请输入IMEI">
+				</div>
+				<div class="form-group">
+					<label for="search_IMSI">IMSI</label> <input type="text"
+						class="form-control" id="search_IMSI" placeholder="请输入IMSI">
+				</div>
+				<div class="form-group">
+					<label for="search_time">时间段</label> <input readonly type="text"
+						class="form-control" id="search_time" placeholder="请输入时间段">
+				</div>
+				<div class="form-group">
+					<label for="search_phone">电话</label> <input type="text"
+						class="form-control" id="search_phone" placeholder="请输入手机号">
+				</div>
+				<label class="radio-inline" for="Trajectory_true"> <input
+					type="radio" name="Trajectory" id="Trajectory_true" value="1"
+					checked="checked"> 展示轨迹
+				</label> <label class="radio-inline" for="Trajectory_false"> <input
+					type="radio" name="Trajectory" id="Trajectory_false" value="0">
+					不展示轨迹
+				</label>
+
+				<button id="form_search" style="width: 250px;margin: 10px 0;" class="btn btn-primary">查询</button>
+			</div>
+			<div class="search_status">
+				<p>
+					<span>显示查询条件 </span><i class="icon-chevron-down"
+						style="font-size: 14px;"></i>
+				</p>
+			</div>
+			<div class="map_warning">
+
+				<div class="show_data">
+                    <ul></ul>
+				</div>
+                <script id="obj_list" type="text/html">
+                    {{each data as value i}}
+                    <li id="{{value.objId}}" data-index="{{i}}">
+                        <div class="marker marker_red">&nbsp;{{i + 1}}</div>
+                        <p style="color: #00c;">{{value.name}}</p>
+
+                        <p>地区： {{value.items[0].area}}</p>
+
+                        <p>IMEI： {{value.imei}}</p>
+
+                        <p>IMSI： {{value.imsi}}</p>
+
+                        <p>电话： {{value.phone}}</p>
+
+                        <p>时间： {{value.time}}</p>
+
+                        <p><input type="radio" name="only_show" id="only{{value.objId}}" class="only_show"><label
+                                for="only{{value.ObjId}}">只展示此对象</label></p>
+                    </li>
+                    {{/each}}
+                </script>
+                <div class="map_pagination">
+                    <script id="obj_pagination" type="text/html">
+                        <span> <a id="pre_page" href="#">&lt上一页</a>
+                    </span> <input id="enter_page" type="text" value="{{items[0].page}}"> <span>/{{totalPage}}</span> <span>
+                        <a id="next_page" href="#">下一页&gt</a>
+                    </span>
+                    </script>
+                </div>
+			</div>
+		</div>
+	</div>
+    <div class="slide_child">
+        <div class="slide_child_header">
+            <button type="button" class="btn btn-primary slide_child_back"><i class="icon-arrow-right"></i>返回</button>
+            <button type="button" class="btn btn-success"><i class="icon-download-alt"></i>导出</button>
+                <div style="display: inline;" class="slide_pagenation_content">
+                    <button type="button" class="btn btn-info"><i class="icon-chevron-left"></i>上一页</button>
+                    <span>第<input class="slide_pagenation_enter" type="text">页/</span>
+                    <span>共21页</span>
+                    <button type="button" class="btn btn-info">下一页<i class="icon-chevron-right"></i></button>
+                </div>
+        </div>
+        <table class="table table-bordered table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>经度</th>
+                    <th>纬度</th>
+                    <th>手机型号</th>
+                    <th>APP类型</th>
+                    <th>推送消息</th>
+                </tr>
+            </thead>
+            <tbody class="slide_child_table">
+                <tr>
+                    <td>2014/02/24 12:30</td>
+                    <td>113.124234</td>
+                    <td>31.124234</td>
+                    <td>iPhone 19</td>
+                    <td>LOL</td>
+                    <td><input type="text" placeholder="电话号码"><button type="button" class="btn btn-primary btn-sm msg_push">推送</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <script id="Tpl_slideTable" type="text/html">
+            {{each items as value i}}
+            <tr data-objId="{{objId}}" data-dataId="{{value.dataId}}">
+                <td>{{value.time}}</td>
+                <td>{{value.longitude}}</td>
+                <td>{{value.latitude}}</td>
+                <td>iPhone 19</td>
+                <td>LOL</td>
+                <td><input type="text" placeholder="电话号码"><button type="button" class="btn btn-primary btn-sm msg_push">推送</button></td>
+            </tr>
+            {{/each}}
+        </script>
+    </div>
+	<div class="map_list" id="myMap"></div>
+	<div class="list-hide list-hide-right">
+		<i class="icon-chevron-left"></i>
+	</div>
+    <marquee class="map_marquee" behavior="scroll" scrollamount="3" direction="up" align="middle">
+
+    </marquee>
+    <script id="Tpl_marquee" type="text/html">
+        {{each data as value i}}
+            {{each value.items as v ii}}
+        <p>新增对象: 姓名:{{value.name}} IMEI:{{value.imei}} IMSI:{{value.imsi}}  手机号:{{value.phone}} 经度:{{v.longitude}} 纬度:{{v.latitude}}</p>
+            {{/each}}
+        {{/each}}
+    </script>
+	<script src="../lib/seajs/sea-debug.js"></script>
+	<script>
+    // Set configuration
+    seajs.config({
+        base: '../lib/',
+        alias: {
+            jquery: 'jQuery/jquery.min.js',
+            drawManager: 'baiduMap/BMapLib_DrawingManager.js',
+            SearchInfoWindow: 'baiduMap/SearchInfoWindow.js',
+            bootstrap: 'bootstrap/bootstrap.min.js',
+            moment: 'bootstrap/moment.min.js',
+            daterangepicker: 'bootstrap/daterangepicker.js',
+            underscore: 'underscore/underscore.js',
+            backbone: 'backbone/backbone.js',
+            artTemplate: 'artTemplate/artTemplate.js'
+        }
+    });
+    seajs.use('underscore');
+    seajs.use('drawManager');
+    seajs.use('SearchInfoWindow');
+    // 入口
+    seajs.use('../js/map_query/init.js');
+    seajs.use('../js/common.js');
+</script>
+</body>
+</html>

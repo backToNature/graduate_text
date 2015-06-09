@@ -1,0 +1,52 @@
+package com.swust.kelab.repos;
+
+import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import com.swust.kelab.domain.Location;
+import com.swust.kelab.domain.LocationRaw;
+
+public class LocationRawRowMapper implements RowMapper<LocationRaw> {
+
+	public static final String LOCATIONID_COLUMN = "LocationNewID";
+	public static final String IMEI_COLUMN = "IMEI";
+	public static final String IMSI_COLUMN = "IMSI";
+	public static final String POSTIME_COLUMN = "PosTime";
+	public static final String LONGTITUDE_COLUMN = "Longitude";
+	public static final String LATITUDE_COLUMN = "Latitude";
+	public static final String LOCTYPE_COLUMN = "LocType";
+	public static final String TRANSFERFLAG_COLUMN = "TransferFlag";
+	public static final String LONGTITUDEBAIDU_COLUMN = "LongitudeBaidu";
+	public static final String LATITUDEBAIDU_COLUMN = "LatitudeBaidu";
+	public static final String SRCIP_COLUMN = "SrcIP";
+	public static final String AREAID_COLUMN = "AreaID";
+	public static final String DSTIP_COLUMN = "DstIP";
+	public static final String PHONETYPE_COLUMN = "PhoneType";
+	public static final String APPTYPE_COLUMN = "AppType";
+
+	@Override
+	public LocationRaw mapRow(ResultSet rs, int rowNum) throws SQLException {
+		LocationRaw locationRaw = new LocationRaw();
+
+		locationRaw.setLocationID(BigInteger.valueOf(rs.getLong(LOCATIONID_COLUMN)));
+		locationRaw.setImei(rs.getString(IMEI_COLUMN));
+		locationRaw.setImsi(rs.getString(IMSI_COLUMN));
+		locationRaw.setPosTime(rs.getTimestamp(POSTIME_COLUMN));
+		locationRaw.setLongitude(rs.getString(LONGTITUDE_COLUMN));
+		locationRaw.setLatitude(rs.getString(LATITUDE_COLUMN));
+		locationRaw.setLocType(rs.getInt(LOCTYPE_COLUMN));
+		locationRaw.setTransferFlag(rs.getInt(TRANSFERFLAG_COLUMN));
+		locationRaw.setLongitudeBaidu(rs.getString(LONGTITUDEBAIDU_COLUMN));
+		locationRaw.setLatitudeBaidu(rs.getString(LATITUDEBAIDU_COLUMN));
+		locationRaw.setSrcIP(rs.getString(SRCIP_COLUMN));
+		locationRaw.setAreaID(rs.getInt(AREAID_COLUMN));
+		locationRaw.setDstIP(rs.getString(DSTIP_COLUMN));
+		locationRaw.setPhoneType(rs.getString(PHONETYPE_COLUMN));
+		locationRaw.setAppType(rs.getString(APPTYPE_COLUMN));
+
+		return locationRaw;
+	}
+}

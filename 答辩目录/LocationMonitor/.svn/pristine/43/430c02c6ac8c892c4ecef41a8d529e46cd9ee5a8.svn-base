@@ -1,0 +1,96 @@
+package com.swust.kelab.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.AlertData;
+import com.swust.kelab.domain.AlertViewData;
+import com.swust.kelab.repos.AlertDAO;
+
+
+@Service("alertService")
+public class AlertService {
+	@Autowired
+	private AlertDAO alertDAO;
+	AlertViewData alertViewData = new AlertViewData();
+	AlertData alertdata = new AlertData();
+	String[] strTime = new String[7];
+    Integer[] defaultseries = new Integer[7];
+    Integer[] defaultseries_resolved = new Integer[7];
+    Integer[] defaultseries_n_resolve = new Integer[7];
+    Integer numDay = 0; 
+	public AlertData select(String strTime) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");//日期格式
+		//查询默认时间
+		if(strTime == null){
+			Calendar calendar = Calendar.getInstance();
+			Date date = new Date();
+			try {
+				date = sdf.parse(sdf.format(new Date()));//系统时间
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			calendar.setTime(date);
+			System.out.println(calendar.getTime());
+			for(int i=6;i>=0;i--){
+				defaultseries[i] = alertDAO.selectSeries(calendar.getTime());
+				defaultseries_resolved[i] = alertDAO.selectSeries_resolved(calendar.getTime());
+				defaultseries_n_resolve[i] = alertDAO.selectSeries_n_resolve(calendar.getTime());
+				calendar.add(Calendar.DAY_OF_YEAR, -1);
+				}
+			alertdata.setSeries(defaultseries);
+			alertdata.setSeries_resolved(defaultseries_resolved);
+			alertdata.setSeries_n_resolve(defaultseries_n_resolve);
+		}
+		//查询给定时间
+		else{
+			String[] str = new String[2];
+			Date[] da = new Date[2];
+			str = strTime.split("-");
+			for(int i =0;i<2;i++){
+				try {
+					da[i]=sdf.parse(str[i]);
+
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			//如果第一个时间比第二个时间大，查询结果任然是按时间顺序递增
+			if(da[0].compareTo(da[1])>0){
+				Date d = da[0];
+				da[0] = da[1];
+				da[1] = d;
+			}
+			Calendar calendar1 = Calendar.getInstance(); 
+			calendar1.setTime(da[0]);
+			Calendar calendar2 = Calendar.getInstance();
+			calendar2.setTime(da[1]);
+			int flag =-2;//flag =-1/0/+1
+			do{
+				System.out.println("---------------------"+sdf.format(calendar1.getTime())+"----------------------");
+				System.out.println("---------------------"+sdf.format(calendar2.getTime())+"----------------------");
+				calendar1.add(Calendar.DAY_OF_YEAR, +1);
+			    flag = calendar1.getTime().compareTo(calendar2.getTime());
+				numDay++;
+			}while(flag <=0);
+		    Integer[] series = new Integer[numDay];
+		    Integer[] series_resolved = new Integer[numDay];
+		    Integer[] series_n_resolve = new Integer[numDay];
+			for(int j=(numDay-1);j>=0;j--){
+				series[j] = alertDAO.selectSeries(calendar2.getTime());
+				series_resolved[j] = alertDAO.selectSeries_resolved(calendar2.getTime());
+				series_n_resolve[j] = alertDAO.selectSeries_n_resolve(calendar2.getTime());
+				calendar2.add(Calendar.DAY_OF_YEAR, -1);
+			}	
+			alertdata.setSeries(series);
+			alertdata.setSeries_resolved(series_resolved);
+			alertdata.setSeries_n_resolve(series_n_resolve);
+		}		
+		return alertdata;		
+	}
+}

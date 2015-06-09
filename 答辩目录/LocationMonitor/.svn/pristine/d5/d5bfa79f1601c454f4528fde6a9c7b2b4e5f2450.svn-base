@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <title>告警展示</title>
+    <link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/globle.css">
+    <link rel="stylesheet" href="../css/map_warning.css">
+</head>
+<body>
+<div class="globle_header map_header_wrapper">
+    <img class="globle_header_logo" src="../img/logo.png">
+    <span class="globle_header_title">互联网应用作战指挥系统</span>
+    <ul class="globle_header_nav">
+        <li>
+            <a href="#">地图展示</a>
+        </li>
+        <li>·</li>
+        <li class="nav_current">
+            <a href="#">告警展示</a>
+        </li>
+        <li>·</li>
+        <li>
+            <a href="#">表格展示</a>
+        </li>
+        <li>·</li>
+        <li>
+            <a href="#">告警管理</a>
+        </li>
+        <li>·</li>
+        <li>
+            <a href="#" class="globle_open_list">数据管理</a>
+        </li>
+        <li>·</li>
+        <li>
+            <a href="#" class="globle_open_list">系统管理</a>
+            <div class="globle_header_nav_option">
+                <p><a href="#">告警设置</a></p>
+                <p><a href="#">告警展示</a></p>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="content">
+    <div class="list_content">
+        <div class="search_form">
+            <div class="form-group">
+                <label for="search_IMEI">IMEI</label>
+                <input type="text" class="form-control" id="search_IMEI" placeholder="请输入IMEI">
+            </div>
+            <div class="form-group">
+                <label for="search_IMSI">IMSI</label>
+                <input type="text" class="form-control" id="search_IMSI" placeholder="请输入IMSI">
+            </div>
+            <div class="form-group">
+                <label for="search_time">时间段</label>
+                <input type="text" class="form-control" id="search_time" placeholder="请输入时间段">
+            </div>
+            <label class="radio-inline">
+                <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 全部
+            </label>
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 待解决
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 已解决
+                </label>
+                <button style="width: 250px;margin: 10px 0;" class="btn btn-primary">查询</button>
+        </div>
+        <div class="search_status">
+            <p>隐藏查询条件 <i class="icon-chevron-up" style="font-size: 14px;"></i></p>
+        </div>
+        <div class="real_data">
+            <span style="font-size:30px;width: 40%;float: left;color: #09e;">1000</span>
+            <span style="font-size:30px;width: 30%;float: left;color: #f33;">31</span>
+            <span style="font-size:30px;width: 30%;float: left;color: #699f00;">52</span>
+            <span style="font-size:12px;width: 40%;float: left;color: #bdc3c7;">新增告警</span>
+            <span style="font-size:12px;width: 30%;float: left;color: #bdc3c7;">待解决告警</span>
+            <span style="font-size:12px;width: 30%;float: left;color: #bdc3c7;">已解决告警</span>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+    <div id="map_warning"></div>
+
+</div>
+<div class="footer">
+<!-- js打印 -->
+   <!--  <div class="footer_border_left"></div>
+    <img class="footer_border_center" src="../img/bottom_center.png">
+    <div class="footer_border_right"></div>
+    <p>遂宁市公安局 地址:和平西路186 邮政编码:629000 </p>
+    <p>推荐使用浏览器IE8（及以上）</p>
+    <p>版权所有 遂宁市公安局</p> -->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+
+    var form = {
+        init: function () {
+            var self = this;
+            $(function () {
+                // 显示隐藏查询表单
+                self.slide();
+                // 表单请求
+                self.search();
+                // 是否展示轨迹
+                self.locus();
+            });
+        },
+        slide: function () {
+            $('.search_status').on('click', function () {
+                var icon = $('.search_status p i');
+                $('.search_form').slideToggle();
+                if (icon.hasClass('icon-chevron-up')) {
+                    $('.search_status p span').text('显示查询条件 ');
+                } else {
+                    $('.search_status p span').text('隐藏查询条件 ');
+                }
+                icon.toggleClass('icon-chevron-up');
+                icon.toggleClass('icon-chevron-down');
+            });
+        },
+        // 对轨迹展示的控制
+        locus: function () {
+            $('[name="Trajectory"]').change(function () {
+                if ($(this).val() == 1) {
+                    _.each(window.polylineArr, function (val, index) {
+                        if (window.show_index != 9 && window.show_index == index) {
+                            val.show();
+                            return;
+                        } else if (window.show_index == 9) {
+                            val.show();
+                        }
+                    });
+                } else {
+                    _.each(window.polylineArr, function (val, index) {
+                        val.hide();
+                    });
+                }
+            });
+        },
+        search: function () {
+            var IMEI = $('#search_IMEI').val(),
+                IMSI = $('#search_IMSI').val(),
+                time = $('#search_time').val(),
+                phone = $('#search_phone').val(),
+                locus = $('[name="Trajectory"]').filter('[checked="checked"]').val();
+
+        }
+    };
+    module.exports = form;
+});
+

@@ -1,0 +1,41 @@
+package com.swust.kelab.repos;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.swust.kelab.domain.AlertConfig;
+
+@Repository("alertConfigDAO")
+public class AlertConfigDAO {
+	 private SqlSession sqlSession;
+	    @Autowired
+	    public void setSqlSession(SqlSession sqlSession) {
+	        this.sqlSession = sqlSession;
+	    }
+	    
+	 //增加一条告警设置
+	 public int addOneAlertConfig(AlertConfig alertConfig){
+		 return this.sqlSession.insert("alertConfig.insertOne", alertConfig);
+	 }
+	 //删除一条告警设置
+	public int deleteOneAlertConfig(int alertConfigID) {
+		return this.sqlSession.delete("alertConfig.deleteOne",alertConfigID);
+		
+	}
+	//查看某条告警设置条件
+	public AlertConfig viewOneAlertConfig(int alertConfigID) {
+		return this.sqlSession.selectOne("alertConfig.viewOne", alertConfigID);
+	}
+	//查看当前用户的所有告警设置
+	public List<AlertConfig> viewAllAlertConfig(int userID) {
+		return this.sqlSession.selectList("alertConfig.selectList",userID);
+	}
+	//修改告警设置
+	public int updateAlertConfig(AlertConfig alertConfig) {
+		return this.sqlSession.update("alertConfig.updateOne",alertConfig);
+	}
+}

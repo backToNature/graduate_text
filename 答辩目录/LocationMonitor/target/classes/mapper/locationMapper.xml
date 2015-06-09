@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="location">
+
+	<insert id="insertOne" parameterType="com.swust.kelab.domain.Location">
+		insert into location
+		(LocationID) values (#{locationID})
+	</insert>
+
+	<delete id="deleteOne" parameterType="com.swust.kelab.domain.Location">
+		delete from location where
+		LocationID=#{locationID}
+	</delete>
+
+	<update id="updateOne" parameterType="com.swust.kelab.domain.Location">
+		update location
+		set
+		IMEI=#{imei}
+		where
+		LocationID=#{locationID}
+	</update>
+
+	<select id="selectIMEI" parameterType="Map"
+		resultType="com.swust.kelab.domain.Location">
+		select LocationID as locationID,
+		IMEI as imei,
+		IMSI as imsi,
+		PosTime as posTime,
+		Longitude as longitude,
+		Latitude as latitude,
+		LocType as locType,
+		TransferFlag as transferFlag,
+		LongitudeBaidu as
+		longitudeBaidu,
+		LatitudeBaidu as latitudeBaidu,
+		AreaID as areaID,
+		SrcIP
+		as srcIP,
+		DstIP as dstIP,
+		PhoneType as phoneType
+		from location
+		where
+		IMEI=#{imei}
+	</select>
+
+	<select id="selectIMSI" parameterType="Map"
+		resultType="com.swust.kelab.domain.Location">
+		select LocationID as locationID,
+		IMEI as imei,
+		IMSI as imsi,
+		PosTime as posTime,
+		Longitude as longitude,
+		Latitude as latitude,
+		LocType as locType,
+		TransferFlag as transferFlag,
+		LongitudeBaidu as
+		longitudeBaidu,
+		LatitudeBaidu as latitudeBaidu,
+		AreaID as areaID,
+		SrcIP
+		as srcIP,
+		DstIP as dstIP,
+		PhoneType as phoneType
+		from location
+		where
+		IMSI=#{imsi}
+	</select>
+
+	<select id="getLocation" resultType="com.swust.kelab.domain.Location">
+		<!-- SELECT * FROM StandardLog LIMIT #{_skiprows}, #{_pagesize} -->
+		select
+		LocationID as locationID,
+		S.IMSI as IMSI,
+		E.IMEI as IMEI,
+		PosTime as posTime,
+		Longitude as longitude,
+		Latitude as latitude,
+		LocType as locType,
+		TransferFlag as transferFlag,
+		LongitudeBaidu as longitudeBaidu,
+		LatitudeBaidu as latitudeBaidu,
+		AreaID as areaID,
+		SrcIP as srcIP,
+		DstIP as dstIP,
+		PhoneType as phoneType
+		from
+		location l
+		left outer join
+		imsi S ON l.IMSIID = S.IMSIID
+		left outer join
+		imei E ON l.IMEIID = E.IMEIID
+	</select>
+</mapper>

@@ -1,0 +1,99 @@
+package com.swust.kelab.domain;
+
+public class Alert {
+	private Integer alertID;  
+    private Integer alertConfigID;
+    private Integer locationID;
+    private String imei;
+    private String imsi;
+    private String posTime;
+    private String longitudeBaidu;
+    private String latitudeBaidu;
+    private Integer areaID;
+    private String phoneType;
+    private String appType;
+    private Integer alertState;
+    private Integer pushState;
+	public Integer getAlertID() {
+		return alertID;
+	}
+	public void setAlertID(Integer alertID) {
+		this.alertID = alertID;
+	}
+	public Integer getAlertConfigID() {
+		return alertConfigID;
+	}
+	public void setAlertConfigID(Integer alertConfigID) {
+		this.alertConfigID = alertConfigID;
+	}
+	public Integer getLocationID() {
+		return locationID;
+	}
+	public void setLocationID(Integer locationID) {
+		this.locationID = locationID;
+	}
+	public String getImei() {
+		return imei;
+	}
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
+	public String getImsi() {
+		return imsi;
+	}
+	public void setImsi(String imsi) {
+		this.imsi = imsi;
+	}
+	public String getPosTime() {
+		return posTime;
+	}
+	public void setPosTime(String posTime) {
+		this.posTime = posTime;
+	}
+	public String getLongitudeBaidu() {
+		return longitudeBaidu;
+	}
+	public void setLongitudeBaidu(String longitudeBaidu) {
+		this.longitudeBaidu = longitudeBaidu;
+	}
+	public String getLatitudeBaidu() {
+		return latitudeBaidu;
+	}
+	public void setLatitudeBaidu(String latitudeBaidu) {
+		this.latitudeBaidu = latitudeBaidu;
+	}
+	public Integer getAreaID() {
+		return areaID;
+	}
+	public void setAreaID(Integer areaID) {
+		this.areaID = areaID;
+	}
+	public String getPhoneType() {
+		return phoneType;
+	}
+	public void setPhoneType(String phoneType) {
+		this.phoneType = phoneType;
+	}
+	public String getAppType() {
+		return appType;
+	}
+	public void setAppType(String appType) {
+		this.appType = appType;
+	}
+	public Integer getAlertState() {
+		return alertState;
+	}
+	public void setAlertState(Integer alertState) {
+		this.alertState = alertState;
+	}
+	public Integer getPushState() {
+		return pushState;
+	}
+	public void setPushState(Integer pushState) {
+		this.pushState = pushState;
+	}
+
+    
+	
+
+}

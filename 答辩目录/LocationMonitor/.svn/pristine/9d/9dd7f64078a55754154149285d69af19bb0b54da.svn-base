@@ -1,0 +1,20 @@
+package com.swust.kelab.service.engine;
+
+import org.springframework.batch.item.ItemProcessor;
+
+import com.swust.kelab.domain.Alert;
+import com.swust.kelab.domain.Location;
+
+
+public class LocationProcessor implements
+ItemProcessor<Location, Alert>{
+
+
+	public Alert process(Location item) throws Exception {
+		// 写入location, imsi, imei, objectinfor四张表
+		// 查询locationConfig表，确定是否产生告警，返回告警对象
+		// 保存到batch的数据库中
+		return new Alert();
+	}
+
+}

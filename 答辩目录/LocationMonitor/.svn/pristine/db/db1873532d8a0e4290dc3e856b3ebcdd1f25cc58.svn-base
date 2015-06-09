@@ -1,0 +1,49 @@
+$(document).ready(function() {
+	$.ajax({
+		type : 'post',
+		contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+		url : "../../handler/main/staDatasetInfo",
+		dataType : 'json',
+		data : {},
+		success : function(data) {
+			if (data.ret) {
+				var temp='';
+				if(data.data.staInfo.topic!=undefined){
+					$("#topic").append(data.data.staInfo.topic);
+				}
+				if(data.data.staInfo.accoNum!=undefined){
+					$("#user").append(data.data.staInfo.accoNum);
+				}
+				if(data.data.staInfo.weiboNum!=undefined){
+					$("#weibo").append(data.data.staInfo.weiboNum);
+				}
+				if(data.data.staInfo.commentNum!=undefined){
+					$("#comment").append(data.data.staInfo.commentNum);
+				}
+			}else{
+				alert("查询数据集信息失败，请先正确导入数据集信息！");
+			}			
+		}
+	});
+});
+
+/**
+ * 按钮函数，挖掘意见领袖
+ */
+function leaderMining(){
+	$.ajax({
+		type : 'post',
+		contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+		url : "../../handler/main/findLeaders",
+		dataType : 'json',
+		data : {},
+		success : function(data) {
+			if (data.ret) {
+				alert("挖掘意见领袖成功！");
+				location.href="leaders.html";
+			}else{
+				alert("挖掘意见领袖失败，请先检查数据集信息！");
+			}			
+		}
+	});
+}

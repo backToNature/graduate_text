@@ -1,0 +1,39 @@
+$(document).ready(function(){
+	//获取参数
+	var accoId=-1;
+	accoId=location.search.split("?")[1].split("&")[0].split("=")[1];
+	//查询并显示意见领袖的详细信息
+	$.ajax({
+		type : 'post',
+		contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+		url : "../../handler/leader/viewOneLeader",
+		dataType : 'json',
+		data : {"accoId":accoId},
+		success : function(data) {
+			if (data.ret) {
+				//显示基本信息
+				data=data.data.leader;
+				$("#info-item0").html("用户昵称："+data.nickname);
+				$("#info-item1").html("总微博数："+data.totalWeiboNum);
+				$("#info-item2").html("话题评论数："+data.commentNum);
+				$("#info-item3").html("粉丝数："+data.fansNum);
+				$("#info-item4").html("相互关注数："+data.mutualNum);
+				$("#info-item5").html("排名："+data.leaderRank);
+				$("#info-item6").html("话题微博数："+data.weiboNum);
+				$("#info-item7").html("话题转发数："+data.repostNum);
+				$("#info-item8").html("关注数："+data.attationNum);
+				$("#info-item9").html("是否认证："+data.verifyStr);
+				//显示微博信息
+				var weibos="";
+				$.each(data.weibos, function(itemIndex, item) {
+					weibos+="<div class=\"control-group\"><div class=\"controls\">"+"#"+"<B>内容</B>："+item.content+"</div><div class=\"controls\">"+"<B>评论数：</B>"+item.commentNum+
+					"&nbsp;&nbsp;&nbsp;&nbsp;<B>转发数：</B>"+item.repostNum+
+					"&nbsp;&nbsp;&nbsp;&nbsp;<B>发表时间：</B>"+item.timeStr+"</div></div></br>";
+				});
+				$("#mainWeibo").html(weibos);
+			}else{
+				alert("查询意见领袖失败，请检查数据集信息！");
+			}			
+		}
+	});
+});

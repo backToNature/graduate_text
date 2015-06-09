@@ -1,0 +1,31 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+    require('daterangepicker');
+    var datetimepicker = {
+        init: function () {
+            $(function () {
+                $('#search_time').daterangepicker({
+                    timePicker: true,
+                    format: 'YYYY/MM/DD/ ~h:mm',
+                    timePicker12Hour: false,
+                    timePickerIncrement: 60,
+                    startDate: '2013-08-01'
+                }, function(start, end, label) {
+                    console.log(start.toISOString(), end.toISOString(), label);
+                }); 
+                $('#timePicker').daterangepicker({
+                    //timePicker: true,
+                    format: 'YYYY/MM/DD',
+                    timePicker12Hour: false,
+                   // timePickerIncrement: 60,
+                    startDate: '2013-08-01'
+                }, function(start, end, label) {
+                    console.log(start.toISOString(), end.toISOString(), label);
+                }); 
+            });
+        }
+    };
+    module.exports = datetimepicker;
+});
+

@@ -1,0 +1,233 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    var $$warnning_model = require('../map_warnning/warnning_model');
+    require('jquery');
+    var template = require('artTemplate');
+    var list = {
+        init: function () {
+            var self = this;
+            $(function () {
+//                self.left_list();
+                self.slide();
+                self.detail();
+                self.slide_child_render();
+                self.pagenation();
+                self.detail_pagination();
+            });
+        },
+        left_list: function () {
+
+        },
+        slide: function () {
+            $('.search_status').on('click', function () {
+                var icon = $('.search_status p i');
+                $('.search_form').slideToggle();
+                if (icon.hasClass('icon-chevron-up')) {
+                    $('.search_status p span').text('显示告警条件 ');
+                } else {
+                    $('.search_status p span').text('隐藏告警条件 ');
+                }
+                icon.toggleClass('icon-chevron-up');
+                icon.toggleClass('icon-chevron-down');
+            });
+        },
+        detail: function () {
+            /**
+             * 展示列表详情
+             */
+            var show_data = $('.show_data'),
+                slide_child = $('.slide_child'),
+                slide_child_back = $('.slide_child_back'),
+                win_width = $(window).width(),
+                self = this;
+            slide_child.css('height', ($(window).height() - 56) + 'px');
+            show_data.delegate('.list_detail', 'click', function (e) {
+                e.stopPropagation();
+                var id = $(this).closest('li').attr('data-id');
+                slide_child.attr('data-id', id);
+
+                self.detail_search(id, 1);
+
+                slide_child.children('*').hide();
+                slide_child.show();
+                slide_child.animate({
+                    width: (win_width - 300) + 'px'
+                },'normal','swing',function () {
+                    slide_child.children('*').fadeIn(500);
+                    $('.list-hide').hide();
+                });
+            });
+            slide_child.delegate('.slide_child_back', 'click', function () {
+                slide_child.children('*').fadeOut(500, function () {
+                    slide_child.animate({
+                        width: 0
+                    },'normal','swing',function () {
+                        slide_child.hide();
+                        $('.list-hide').show();
+                    });
+                });
+            });
+        },
+        detail_search: function (alertConfigID, pageNumber) {
+            var slide_child = $('.slide_child'),
+            slide_child_table = $('.slide_child_table');
+            $$warnning_model.search_detail({
+                alertConfigID: alertConfigID,
+                alertPageCount: 20,
+                pageNumber: pageNumber
+            }, function (data) {
+                $('.loading').remove();
+                $('.no_data').remove();
+                if (data.data.totalCount == 0  || !data.data) {
+                    slide_child_table.html('');
+                    slide_child.prepend('<div class="no_data"><img src="../img/a6a41911xc66ca9b23837&690.jpg"><span>没有数据，请重新查询...</span></div>');
+                    return;
+                }
+            } ,function (){
+                $('.loading').remove();
+                $('.no_data').remove();
+                slide_child.prepend('<div class="loading"><img src="../img/loading.gif"><p>加载中，请稍后...</p></div>');
+            });
+        },
+        slide_child_render: function () {
+            /**
+             * 二级侧边栏渲染逻辑
+             */
+            $$warnning_model.on('change:detail', function () {
+                var slide = $('.slide_child'),
+                    slide_child_table = $('.slide_child_table'),
+                    data = $$warnning_model.get('detail');
+                if (data.data && data.data.items[0]) {
+                    var items = data.data.items[0];
+                    slide_child_table.attr('data-page', items.page);
+                    slide_child_table.attr('data-totalCount', data.data.totalCount);
+                    slide_child_table.attr('data-totalPage', data.data.totalPage);
+                    $('.slide_pagenation_totalPage').text('共'+ data.data.totalPage + '页');
+                    $('.slide_pagenation_enter').val(items.page);
+                    var lisr_render = template('Tpl_slideTable', items);
+                    slide_child_table.html(lisr_render);
+                }
+            });
+//            if(!+[1,]){
+//                alert("这是ie浏览器");
+//            } else {
+//                alert("这不是ie浏览器");
+//            }
+        },
+        pagenation: function () {
+            /**
+             * 分页
+             */
+            var pagination_wrapper = $('.map_pagination');
+            pagination_wrapper.delegate('#pre_page', 'click', function () {
+                var page = parseInt(pagination_wrapper.attr('data-page'));
+                if (page <= 1) {
+                    return;
+                } else {
+                    window.param.pageNumber = page - 1;
+                    $$warnning_model.search(window.param, function (data) {
+                        if (data.data.totalCount == 0  || !data.data) {
+                            $('.show_data').html('<div class="no_data"><img src="../img/a6a41911xc66ca9b23837&690.jpg"><span>没有数据，请重新查询...</span></div>');
+                            $('.map_pagination').html('');
+                            $('.map_marquee').html('');
+                            return;
+                        }
+                    } ,function (){
+                        $('.show_data').html('<div class="loading"><img src="../img/loading.gif"><p>加载中，请稍后...</p></div>');
+                    });
+                }
+            });
+
+            pagination_wrapper.delegate('#next_page', 'click', function () {
+                var page = parseInt(pagination_wrapper.attr('data-page')),
+                    totalPage = parseInt(pagination_wrapper.attr('data-totalPage'));
+
+                if (totalPage <=  page) {
+                    return;
+                } else {
+                    window.param.pageNumber = page + 1;
+                    $$warnning_model.search(window.param, function (data) {
+                        if (data.data.totalCount == 0  || !data.data) {
+                            $('.show_data').html('<div class="no_data"><img src="../img/a6a41911xc66ca9b23837&690.jpg"><span>没有数据，请重新查询...</span></div>');
+                            $('.map_pagination').html('');
+                            $('.map_marquee').html('');
+                            return;
+                        }
+                    } ,function (){
+                        $('.show_data').html('<div class="loading"><img src="../img/loading.gif"><p>加载中，请稍后...</p></div>');
+                    });
+                }
+            });
+
+            pagination_wrapper.delegate('#enter_page', 'keydown', function (e) {
+                var inputPage = $('#enter_page').val(),
+                    page = parseInt(pagination_wrapper.attr('data-page')),
+                    totalPage = parseInt(pagination_wrapper.attr('data-totalPage'));
+                re = /^[1-9]+[0-9]*]*$/; //判断字符串是否为数字 //判断正整数 /^[1-9]+[0-9]*]*$/
+                if (e.which == 13 && re.test(inputPage)) {
+                    inputPage = parseInt(inputPage);
+                    if (inputPage > totalPage || inputPage < 1) {
+                        alert('请输入正确的页码');
+                    } else {
+                        window.param.pageNumber = inputPage;
+                        $$warnning_model.search(window.param, function (data) {
+                            if (data.data.totalCount == 0  || !data.data) {
+                                $('.show_data').html('<div class="no_data"><img src="../img/a6a41911xc66ca9b23837&690.jpg"><span>没有数据，请重新查询...</span></div>');
+                                $('.map_pagination').html('');
+                                $('.map_marquee').html('');
+                                return;
+                            }
+                        } ,function (){
+                            $('.show_data').html('<div class="loading"><img src="../img/loading.gif"><p>加载中，请稍后...</p></div>');
+                        });
+                    }
+                }
+            });
+        },
+        detail_pagination: function () {
+            /**
+             * 二级分页
+             */
+            var slide_child = $('.slide_child'),
+                slide_child_table = $('.slide_child_table'),
+                self = this;
+            slide_child.delegate('.detail_next', 'click', function () {
+                var page = parseInt(slide_child_table.attr('data-page')),
+                    totalPage = parseInt(slide_child_table.attr('data-totalPage'));
+                if (totalPage <  page) {
+                    return;
+                } else {
+                    var id = slide_child.attr('data-id');
+                    self.detail_search(id, page + 1);
+                }
+            });
+
+            slide_child.delegate('.detail_pre', 'click', function () {
+                var page = parseInt(slide_child_table.attr('data-page'));
+                if (page <= 1) {
+                    return;
+                } else {
+                    var id = slide_child.attr('data-id');
+                    self.detail_search(id, page - 1);
+                }
+            });
+
+            slide_child.delegate('.slide_pagenation_enter', 'keydown', function (e) {
+                var inputPage = $('.slide_pagenation_enter').val(),
+                    page = parseInt(slide_child_table.attr('data-page')),
+                    totalPage = parseInt(slide_child_table.attr('data-totalPage'));
+                re = /^[1-9]+[0-9]*]*$/; //判断字符串是否为数字 //判断正整数 /^[1-9]+[0-9]*]*$/
+                if (e.which == 13 && re.test(inputPage)) {
+                    inputPage = parseInt(inputPage);
+                    if (inputPage > totalPage || inputPage < 1) {
+                        alert('请输入正确的页码');
+                    } else {
+                        var id = slide_child.attr('data-id');
+                        self.detail_search(id, inputPage);
+                    }
+                }
+            });
+        },
+    };
+    module.exports = list;
+});

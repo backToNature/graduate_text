@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="user">
+<insert id="insertOne" parameterType="com.swust.kelab.domain.User">
+insert into user(t_name,t_time) values (#{name},#{time})
+</insert>
+
+<delete id="deleteOne" parameterType="Integer">
+delete from user where t_id=#{id}
+</delete>
+
+<update id="updateOne" parameterType="com.swust.kelab.domain.User">
+update user
+set 
+<if test="name!=null">
+t_name = #{name},
+</if>
+<if test="time!=null">
+t_time = #{time} 
+</if>
+where
+t_id=#{id}
+</update>
+
+<select id="selectList" parameterType="Map" resultType="com.swust.kelab.domain.User">
+select t_id as id,
+t_name as name,
+t_time as time
+  from
+  user
+<where ></where> 
+  where
+  num=#{num}
+  and 
+  name like '%#{name}#'
+  
+</select>
+
+
+
+<select id="selectCount" parameterType="Map" resultType="Integer">
+select count(*)
+from
+user
+where
+1 = 1
+<if test="id!=null">
+and t_id=#{id}
+</if>
+<if test="name!=null">
+and t_name like CONCAT('%','${name}','%' ) 
+</if>
+<if test="startTime!=null">
+and t_time>=#{startTime}
+</if>
+<if test="endTime!=null">
+and t_time <![CDATA[<=]]>#{id}
+</if>
+</select>
+
+<select id="selectByPage"  parameterType="Map" resultType="com.swust.kelab.domain.User">
+select 
+t_id as id,
+t_name as name,
+t_time as time
+from
+user
+where
+1 = 1
+<if test="id!=null">
+and t_id=#{id}
+</if>
+<if test="name!=null">
+and t_name like CONCAT('%','${name}','%' )
+</if>
+<if test="startTime!=null">
+and t_time>=#{startTime}
+</if>
+<if test="endTime!=null">
+and t_time <![CDATA[<=]]>#{id}
+</if>
+limit #{startIndex},#{maxCount}
+</select>
+</mapper>

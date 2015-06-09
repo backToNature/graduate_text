@@ -1,0 +1,290 @@
+package com.swust.kelab.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.swust.kelab.domain.LocationSimple;
+import com.swust.kelab.model.CommonQuery;
+import com.swust.kelab.model.ObjModel;
+import com.swust.kelab.model.PageData;
+import com.swust.kelab.model.QueryData;
+import com.swust.kelab.repos.LocationQueryDAO;
+import com.swust.kelab.repos.bean.ListQuery;
+import com.swust.kelab.util.FormatUtil;
+import com.swust.kelab.util.PageHandle;
+
+@Service("locationQueryService")
+public class LocationQueryService {
+	@Autowired
+	private LocationQueryDAO locationQueryDAO;
+	private List<ObjModel> objectList;
+
+	
+	/**
+	 * @description分页查询
+	 * @author CHENJIAO
+	 * @param objm
+	 * @param query
+	 * @param pageNumber
+	 * @return
+	 */
+	public QueryData queryBypage(ObjModel objm, CommonQuery query, Integer pageNumber, Integer locCount) {
+		
+		System.out.println("---locCount--- "+locCount);
+		Date time1 = new Date();
+		//取出接收到的参数
+		String imei = objm.getImei();
+		String imsi = objm.getImsi();
+		String phone = objm.getPhone();
+		String longitudeA = objm.getLongitudeA();			
+		String latitudeA = objm.getLatitudeA();
+		String longitudeB = objm.getLongitudeB();
+		String latitudeB = objm.getLatitudeB();
+		
+		System.out.println("objmIMEI:"+ imei);
+		
+		QueryData result = new QueryData();
+		int totalPage = 0;
+		ListQuery queryMap = query.format();
+		queryMap.fill("imei", imei);
+		queryMap.fill("imsi", imsi);
+		queryMap.fill("phone", phone);
+		
+		//查询符合条件的对象数量
+		int allCount = locationQueryDAO.countObjNum(queryMap);
+		
+		System.out.println("显示页码:"+pageNumber);
+		
+		if(query.getPageArray()==null&&pageNumber!=null){
+			query.setPageArray(new int[]{pageNumber});
+		}else{
+			query.setPageArray(new int[]{1});
+		}
+		
+		//查询的起始位置和长度
+		int startIndex = 0;
+		queryMap.fill("startIndex", startIndex);
+		queryMap.fill("maxCount", allCount);
+		
+		//查询符合条件的对象
+		objectList = locationQueryDAO.queryObjects(queryMap);
+		
+		System.out.println("objectsize:"+objectList.size());
+		
+		//对每个对象进行地理位置查询操作
+		Iterator objIterator = objectList.iterator();
+		while(objIterator.hasNext()){
+			ObjModel object = (ObjModel) objIterator.next();
+			System.out.println("imei:"+object.getImei()+"\nimsi:"+object.getImsi());
+			if(longitudeA!=null&&longitudeA!=""&&longitudeB!=null&&longitudeB!=""
+				    &&latitudeA!=null&&latitudeA!=""&&latitudeB!=null&&latitudeB!=""){
+				object.setLongitudeA(longitudeA);
+				object.setLongitudeB(longitudeB);
+				object.setLatitudeA(latitudeA);
+				object.setLatitudeB(latitudeB);
+			}
+			
+			//为每一个对象添加时间限制
+			String time = new String();
+			time = objm.getTime();
+			if(time!=null&&time!=""){
+				String dateStr[] = time.split(" - ");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/ HH:mm");
+				try {
+					object.setDateStart(sdf.parse(dateStr[0]));
+					object.setDateEnd(sdf.parse(dateStr[1]));
+				} catch (ParseException e) {
+					e.printStackTrace();
+					System.out.println("时间转化异常");
+					return null;
+				}
+			}
+			System.out.println("-----位置查询-----");
+			//查询该对象对应的地理位置的第一页
+			CommonQuery locQuery = new CommonQuery();
+			locQuery.setRecordPerPage(locCount);
+			int locPageNum = 1;
+			QueryData locData = new QueryData();
+			locData = this.queryLocByPage(locQuery, locPageNum, object);
+			object.setLocData(locData);
+			List<LocationSimple> items = null;
+			if(locData!=null){		
+				List<PageData> pageDataList = locData.getPageData();
+				System.out.println("pageDataListSize:"+ pageDataList.size());
+				if(pageDataList.size()!=0){
+					PageData pageData = pageDataList.get(0);
+					List<LocationSimple> locList = (List<LocationSimple>) pageData.getData();
+					items = locList;
+					time = FormatUtil.formatDate(locList.get(0).getTime()) + " - " 
+						+FormatUtil.formatDate(locList.get(locList.size()-1).getTime());
+					object.setTime(time);
+				}else{
+					objIterator.remove();
+					allCount--;
+				}	
+			}
+			object.setLocData(null);
+			object.setItems(items);
+		}
+		//设置新的总数量
+		result.setTotalCount(allCount);
+		//计算总页数
+		totalPage = QueryData.computeTotalPage(allCount, query.getRecordPerPage());
+		result.setTotalPage(totalPage);
+		//为每个对象编号并移除不需要返回的对象
+		int objId = 0;
+		Iterator objIter = objectList.iterator();
+		while(objIter.hasNext()){
+			ObjModel object = (ObjModel) objIter.next();
+			object.setObjId(++objId);
+			if(objId <= (pageNumber-1)*query.getRecordPerPage()||objId > pageNumber*query.getRecordPerPage()){
+				objIter.remove();
+			}
+		}
+		System.out.println("objectSize:"+objectList.size());
+		Date time2 = new Date();
+		long time = time2.getTime()-time1.getTime();
+		System.out.println("service运行时间："+ time);
+		List<PageData> pageDataList = Lists.newArrayList();
+		return PageHandle.initialQueryData(result, pageDataList, query, objectList, totalPage);
+	}
+	
+	/**
+	 * @description 通过已有的对象ID查询对应的地理位置信息
+	 * @param query
+	 * @param locPageNum
+	 * @param objId
+	 * @return QueryData
+	 */
+	public QueryData queryLocationByPage(CommonQuery query, Integer locPageNum, Integer objId) {
+		QueryData result = new QueryData();
+		ObjModel object = new ObjModel();
+		for(int i = 0; i < objectList.size(); i++){
+			ObjModel obj = objectList.get(i);
+			int id = obj.getObjId();
+			if(objId == id){
+				object = objectList.get(i);
+			}
+		}
+		System.out.println("objectID:"+ object.getObjId());
+		
+		if(object.getObjId()==null){
+			System.out.println("object is null");
+			return null;
+		}
+		result = this.queryLocByPage(query, locPageNum, object);
+		return result;
+		
+	}
+	
+	/**
+	 * @description 通过对象分页查询其位置信息
+	 * @param query
+	 * @param locPageNum
+	 * @param object
+	 * @return QueryData
+	 */
+	public QueryData queryLocByPage(CommonQuery query, Integer locPageNum, ObjModel object) {
+		QueryData result = new QueryData();
+		int totalPage = 0;	
+		String imei = object.getImei();
+		String imsi = object.getImsi();
+		
+		ListQuery queryMap = query.format();
+		queryMap.fill("imei", imei);
+		queryMap.fill("imsi", imsi);
+		
+		if(object.getLongitudeA()!=null&&object.getLongitudeB()!=null
+				&&object.getLatitudeA()!=null&&object.getLatitudeB()!=null){
+			double longitudeA = Double.parseDouble(object.getLongitudeA());
+			double longitudeB = Double.parseDouble(object.getLongitudeB());
+			double latitudeA = Double.parseDouble(object.getLatitudeA());
+			double latitudeB = Double.parseDouble(object.getLatitudeB());
+			queryMap.fill("longitudeA", longitudeA);
+			queryMap.fill("longitudeB", longitudeB);
+			queryMap.fill("latitudeA", latitudeA);
+			queryMap.fill("latitudeB", latitudeB);
+		}
+		
+		int allCount = locationQueryDAO.countLocationNum(queryMap);
+		System.out.println("locationCount:"+ allCount);
+		
+		List<LocationSimple> locList = new ArrayList<LocationSimple>();
+		locList = this.queryLocationByPage(query, locPageNum, object);
+		
+		//设置总数量
+		result.setTotalCount(allCount);
+		//计算总页数
+		totalPage = QueryData.computeTotalPage(allCount, query.getRecordPerPage());
+		result.setTotalPage(totalPage);
+		List<PageData> pageDataList = Lists.newArrayList();
+		return PageHandle.initialQueryData(result, pageDataList, query, locList, totalPage);
+	}
+	
+	/**
+	 * @description 分页查询位置时，查询某一页的信息
+	 * @param query
+	 * @param locPageNum
+	 * @param object
+	 * @return List<LocationSimple>
+	 */
+	public List<LocationSimple> queryLocationByPage(CommonQuery query, Integer locPageNum, ObjModel object){
+
+		String imei = object.getImei();
+		String imsi = object.getImsi();
+	
+		ListQuery queryMap = query.format();
+		queryMap.fill("imei", imei);
+		queryMap.fill("imsi", imsi);
+		
+		if(object.getLongitudeA()!=null&&object.getLongitudeB()!=null
+				&&object.getLatitudeA()!=null&&object.getLatitudeB()!=null){
+			double longitudeA = Double.parseDouble(object.getLongitudeA());
+			double longitudeB = Double.parseDouble(object.getLongitudeB());
+			double latitudeA = Double.parseDouble(object.getLatitudeA());
+			double latitudeB = Double.parseDouble(object.getLatitudeB());
+			queryMap.fill("longitudeA", longitudeA);
+			queryMap.fill("longitudeB", longitudeB);
+			queryMap.fill("latitudeA", latitudeA);
+			queryMap.fill("latitudeB", latitudeB);
+			System.out.println("longitudeA: "+longitudeA);
+		}
+		
+		if(query.getRecordPerPage()<=0){
+			query.setRecordPerPage(20);
+		}
+		if(query.getPageArray()==null&&locPageNum!=null){
+			query.setPageArray(new int[]{locPageNum});
+		}else{
+			query.setPageArray(new int[]{1});
+		}
+		
+		//查询的起始位置和长度
+		int startIndex = (locPageNum-1)*query.getRecordPerPage();
+		int endIndex = query.getRecordPerPage();
+		queryMap.fill("startIndex", startIndex);
+		queryMap.fill("endIndex", endIndex);
+		//时间限制
+		Date dateStart = object.getDateStart();
+		Date dateEnd = object.getDateEnd();
+		queryMap.fill("dateStart", dateStart);
+		queryMap.fill("dateEnd", dateEnd);
+		
+		List<LocationSimple> locList =  new ArrayList<LocationSimple>();
+		locList = locationQueryDAO.queryLocByPage(queryMap);
+		int dataId = startIndex;
+		for(int i = 0; i < locList.size(); i++){
+			LocationSimple location = locList.get(i);
+			location.setDataId(++dataId);
+		}
+		return locList;	
+	}
+}

@@ -1,0 +1,41 @@
+// 入口
+define(function (require, exports, module) {
+    require('jquery');
+    require('backbone');
+    // 地图部分
+    var map = require('../map_query/map');
+    map.init();
+
+    // 日历控件
+    var datetimepicker = require('../map_query/datetimepicker');
+    datetimepicker.init();
+    
+   /* // 区域控件
+    var city_select = require('../map_query/city_select');
+    city_select.init();
+*/
+
+    // 表单
+    var form = require('../form');
+    form.init();
+
+    // 列表逻辑
+    var list = require('../map_query/list');
+    list.init();
+
+
+    //数据模型
+    var $$map_model = require('../map_query/map_model');
+
+    $$map_model.on('change:list', function () {
+        var template = require('artTemplate');
+        var render = template('obj_list', $$map_model.get('list'));
+        $('.show_data ul').html(render);
+    });
+
+
+    $$map_model.search();
+
+});
+
+

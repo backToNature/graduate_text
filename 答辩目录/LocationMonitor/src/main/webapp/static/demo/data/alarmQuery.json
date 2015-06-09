@@ -1,0 +1,138 @@
+{
+    "meta": {
+        "name": "查询告警列表",
+        "description": "查询告警列表",
+        "type": ["GET", "POST"]
+    },
+    "request": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "properties": {
+            "pageNumber": {
+                "type": "number",
+                "description": "页码"
+            },
+            "recordPerPage": {
+                "type": "number",
+                "description": "每页条数"
+            }
+        }
+    },
+    "response": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "data"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "状态码",
+                "default": 200,
+                "maximum": 999,
+                "minimum": 100
+            },
+            "data": {
+                "type": "object",
+                "description": "对象列表",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "description": "单个对象",
+                        "maxItems": 6,
+                        "minItems": 6,
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ObjId": {
+                                    "type": "integer",
+                                    "description": "告警ID"
+                                },
+                                "IMEI": {
+                                    "type": "number",
+                                    "description": "手机串号",
+                                    "minimum": 1000000000000000,
+                                    "maximum": 9999999999999999
+                                },
+                                "IMSI": {
+                                    "type": "number",
+                                    "description": "卡串号",
+                                    "minimum": 1000000000000000,
+                                    "maximum": 9999999999999999
+                                },
+                                "phone": {
+                                    "type": "number",
+                                    "description": "手机号",
+                                    "minimum": 10000000000,
+                                    "maximum": 99999999999
+                                },
+                                "time": {
+                                    "type": "string",
+                                    "description": "时间区间",
+                                    "default": "2013/12/24 12:30~2013/12/16 16:30"
+                                },
+                                "alarmType": {
+                                    "type": "string",
+                                    "description": "告警方式",
+                                    "default": "这个是告警方式"
+                                },
+                                "isPush": {
+                                    "type": "number",
+                                    "description": "是否推送",
+                                    "default": 0
+                                },
+                                "longitudeA": {
+                                    "type": "number",
+                                    "description": "A点经度",
+                                    "default": 116.449
+                                },
+                                "latitudeA": {
+                                    "type": "number",
+                                    "description": "A点纬度",
+                                    "default": 39.805
+                                },
+                                "longitudeB": {
+                                    "type": "number",
+                                    "description": "B点经度",
+                                    "default": 116.450
+                                },
+                                "latitudeB": {
+                                    "type": "number",
+                                    "description": "B点纬度",
+                                    "default": 39.807
+                                }
+                            },
+                            "required": [
+                                "ObjId",
+                                "IMEI",
+                                "IMSI",
+                                "alarmType",
+                                "phone",
+                                "time",
+                                "isPush",
+                                "longitudeA",
+                                "latitudeA",
+                                "longitudeB",
+                                "latitudeB"
+                            ]
+                        }
+                    }
+                },
+                "required": ["items"]
+            }
+        }
+    },
+    "responseError": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+            "status": {
+                "type": "integer",
+                "description": "错误码"
+            },
+            "message": {
+                "type": "string",
+                "description": "错误反馈"
+            }
+        }
+    }
+}

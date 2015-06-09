@@ -1,0 +1,99 @@
+//变量定义
+var xArray,solvedArray,u_solveArray,allArray;
+define(function (require, exports, module){
+	require('jquery');
+	require('highcharts'); 
+	require('datetimepicker');
+	require('datetimepickerCN');
+	//告警表格初始化
+	ajaxRequest(time); 
+	warningInfo(); 
+	//时间查询
+	$("#searchBtn").click(function(){ 
+		//请求三个数组：已处理、未处理、总处理
+		ajaxRequest(time); 
+		//告警表格统计
+		warningInfo(); 
+	});
+	//时间插件
+	$('#datetimepicker').datetimepicker({
+		minView: "month",
+	    format: 'yyyy-mm-dd',
+	    autoclose:true
+	});
+	$("#inputCancel").click(function(){ 
+		$("#datetimepicker").val(""); 
+	});
+	
+	
+});
+
+function ajaxRequest(time){ 
+	if(!time){
+	$.ajax({
+		type : "get",
+		content : "application/x-www-form-urlencoded;charset=UTF-8",
+		url : "../demo/mock/home.json",
+		dataType : 'json',
+		async : false,
+		data : {
+			//:time
+		},
+		success:function(result){  
+			xArray = result.data.time; 
+			solvedArray = result.data.series_resolved; 
+			u_solveArray = result.data.series_n_resolve; 
+			allArray = result.data.series; 
+		}
+	});
+	}
+}
+function warningInfo(){ 
+	$('#container').highcharts({
+	        chart: {
+	            type: 'column'
+	        },
+	        title: {
+	            text: '周告警情况统计表'
+	        },
+	        subtitle: {
+	            text: ''
+	        },
+	        xAxis: {
+	            categories:xArray
+	        },
+	        yAxis: {
+	            min: 0,
+	            title: {
+	                text: '告警数目 (条)'
+	            }
+	        },
+	        tooltip: {
+	            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+	            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+	                '<td style="padding:0"><b>{point.y:.0f} mm</b></td></tr>',
+	            footerFormat: '</table>',
+	            shared: true,
+	            useHTML: true
+	        },
+	        plotOptions: {
+	            column: {
+	                pointPadding: 0.2,
+	                borderWidth: 0
+	            }
+	        },
+	        series: [{
+	            name: '告警总条数',
+	            data: allArray,
+	        	color:'#003366'
+	        }, {
+	            name: '已处理告警数',
+	            data: solvedArray,
+	            color:'#66CC00'
+	        }, {
+	            name: '未处理告警数',
+	            data: u_solveArray,
+	            color:'#FF0000'
+	        }]
+	    });
+}

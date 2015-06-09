@@ -1,0 +1,69 @@
+package com.swust.kelab.repos;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.sun.javafx.collections.MappingChange.Map;
+import com.swust.kelab.domain.AlertData;
+import com.swust.kelab.domain.AlertViewData;
+
+
+@Repository("alertDAO")
+public class AlertDAO {
+	
+	@Autowired
+	private SqlSession sqlSession;
+	public void setSqlSession(SqlSession sqlSession) {
+        this.sqlSession = sqlSession;
+    }
+	public int selectStatus(Date time) {
+		HashMap<String, Date>map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, -7);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time);
+		map.put("mintime", time0);
+		return this.sqlSession.selectOne("select.selectStatus", map);
+	}
+	public int selectSeries(Date time) {
+		HashMap<String, Date>map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, -1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time);
+		map.put("mintime", time0);
+		return this.sqlSession.selectOne("select.selectSeries", map);
+	}
+	public int selectSeries_resolved(Date time) {
+		HashMap<String, Date>map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, -1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time);
+		map.put("mintime", time0);
+		return this.sqlSession.selectOne("select.series_resolved", map);
+	}
+	public int selectSeries_n_resolve(Date time) {
+		HashMap<String, Date>map = new HashMap<String, Date>();
+		Date time0;
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		rightTime.add(Calendar.DAY_OF_YEAR, -1);
+		time0 = rightTime.getTime();
+		map.put("maxtime", time);
+		map.put("mintime", time0);
+		return this.sqlSession.selectOne("select.series_n_resolve", map);
+	}
+
+}

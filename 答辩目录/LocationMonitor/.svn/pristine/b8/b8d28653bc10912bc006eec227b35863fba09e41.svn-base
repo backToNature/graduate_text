@@ -1,0 +1,263 @@
+package com.swust.kelab.service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.swust.kelab.domain.Alert;
+import com.swust.kelab.domain.AlertConfig;
+import com.swust.kelab.model.CommonQuery;
+import com.swust.kelab.model.ConfigAlertModel;
+import com.swust.kelab.model.PageData;
+import com.swust.kelab.model.QueryData;
+import com.swust.kelab.repos.AlertConfigDAO;
+import com.swust.kelab.repos.bean.ListQuery;
+import com.swust.kelab.util.FormatUtil;
+import com.swust.kelab.util.PageHandle;
+@Service("alertConfigService")
+public class AlertConfigService {
+	@Autowired
+	private AlertConfigDAO alertConfigDAO;
+	private List<ConfigAlertModel> configList;
+	private Integer nowAlertConfigID;
+	private static final Integer DEFAULT_PAGENUM = 1;
+	private static final Integer DEFAULT_ALERTPAGERECORD = 20;
+	
+	/**
+	 * @description 增加一个告警配置
+	 * @param alertConfig
+	 * @return
+	 */
+	public int addOneAlertConfig(AlertConfig alertConfig){
+		return alertConfigDAO.addOneAlertConfig(alertConfig);
+	}
+	/**
+	 * @description 删除一条告警设置以及与其对应的告警
+	 * @param alertConfigID
+	 * @return
+	 */
+	public int deleteOneAlertConfig(int alertConfigID) {
+		int flag = alertConfigDAO.deleteAlerts(alertConfigID);
+		System.out.println("deleteAlertflag:"+flag);
+		return alertConfigDAO.deleteOneAlertConfig(alertConfigID);
+	}
+	
+	
+	/**
+	 * @description 分页查询当前用户的告警配置
+	 * @param query
+	 * @param pageNumber
+	 * @param userID
+	 * @return
+	 */
+	public QueryData queryBypage(CommonQuery query, Integer pageNumber, Integer userID, Integer alertPageCount) {
+		QueryData result = new QueryData();
+		int totalPage = 0;
+		ListQuery queryMap = query.format();
+		queryMap.fill("userID", userID);
+		System.out.println("userID:" + userID);
+	
+		//查询告警配置的数量
+		int totalCount = alertConfigDAO.countConfigNum(queryMap);
+		System.out.println("totalCount:" + totalCount);
+		
+		if(query.getPageArray()==null&&pageNumber!=null){
+			query.setPageArray(new int[]{pageNumber});
+		}else{
+			query.setPageArray(new int[]{1});
+		}
+		
+		//查询的起始位置和长度
+		int startIndex = (pageNumber-1)*query.getRecordPerPage();
+		int endIndex = query.getRecordPerPage();
+		queryMap.fill("startIndex", startIndex);
+		queryMap.fill("maxCount", endIndex);
+		System.out.println("startIndex:"+startIndex+"\nmaxCount:"+endIndex);
+		
+		//分页查询该用户的告警配置
+		configList = alertConfigDAO.queryConfigs(queryMap);
+		System.out.println("configListSize:" + configList.size());
+		
+		//对每个告警配置进行查询告警操作并编号
+		int objId = startIndex;
+		Iterator configIter = configList.iterator();	
+		while(configIter.hasNext()){
+			
+			ConfigAlertModel config = (ConfigAlertModel) configIter.next();
+			config.setObjId(++objId);
+			System.out.println("objId: "+objId);
+			int configID = config.getAlertConfigID();
+			System.out.println("configID:" + configID);
+			List<Alert> alertList = new ArrayList<Alert>();
+			Integer pageNum = DEFAULT_PAGENUM;
+			CommonQuery alertQuery = new CommonQuery();
+			alertQuery.setRecordPerPage(DEFAULT_ALERTPAGERECORD);
+			alertList = this.queryAlertByConfig(configID, alertQuery, pageNum);
+			config.setAlertList(alertList);
+		}
+		result.setTotalCount(totalCount);
+		totalPage = QueryData.computeTotalPage(totalCount, query.getRecordPerPage());
+		result.setTotalPage(totalPage);
+		List<PageData> pageDataList = Lists.newArrayList();
+		return PageHandle.initialQueryData(result, pageDataList, query, configList, totalPage);
+	}
+	
+	/**
+	 * @description 分页查询当前告警配置对应的告警
+	 * @param alertConfigID
+	 * @param query
+	 * @param pageNum
+	 * @return
+	 */
+	public List<Alert> queryAlertByConfig(Integer alertConfigID, CommonQuery query, Integer pageNum){
+		List<Alert> alertList = new ArrayList<Alert>();
+		ListQuery queryMap = query.format();
+		
+		System.out.println("recordPerPage:" + query.getRecordPerPage() + "\npageNum:" + pageNum);
+		
+		int startIndex = (pageNum-1)*query.getRecordPerPage();
+		int maxCount = query.getRecordPerPage();
+		
+		queryMap.fill("alertConfigID", alertConfigID);
+		queryMap.fill("startIndex", startIndex);
+		queryMap.fill("maxCount", maxCount);
+		
+		alertList = alertConfigDAO.queryAlertList(queryMap);
+		return alertList;
+		
+	}
+	
+	/**
+	 * @description 分页查询告警配置及其告警，将其封装成QeuryData
+	 * @param alertConfigID
+	 * @param query
+	 * @param pageNumber
+	 * @return
+	 */
+	public QueryData queryAlertBypage(Integer alertConfigID, CommonQuery query, Integer pageNumber) {
+		
+		nowAlertConfigID = alertConfigID;
+		QueryData result = new QueryData();
+		int totalPage = 0;
+		ListQuery queryMap = query.format();
+		
+		int totalCount = alertConfigDAO.countAlertNum(alertConfigID);
+		
+		if(query.getPageArray()==null&&pageNumber!=null){
+			query.setPageArray(new int[]{pageNumber});
+		}else{
+			query.setPageArray(new int[]{1});
+		}
+		
+		List<Alert> alertList = new ArrayList<Alert>();
+		alertList = this.queryAlertByConfig(alertConfigID, query, pageNumber);
+		
+		result.setTotalCount(totalCount);
+		totalPage = QueryData.computeTotalPage(totalCount, query.getRecordPerPage());
+		result.setTotalPage(totalPage);
+		List<PageData> pageDataList = Lists.newArrayList();
+		return PageHandle.initialQueryData(result, pageDataList, query, alertList, totalPage);
+	}
+	
+	
+	/**
+	 * @description 查询当前告警配置的所有告警
+	 * @return List<Alert>
+	 */
+	public List<Alert> queryAllAlert(){
+		CommonQuery query = new CommonQuery();
+		List<Alert> alertList = new ArrayList<Alert>();
+		ListQuery queryMap = query.format();	
+		
+		queryMap.fill("alertConfigID", nowAlertConfigID);
+		
+		alertList = alertConfigDAO.queryAlertList(queryMap);
+		return alertList;
+		
+	}
+	
+	/**
+	 * @description 导出告警信息到EXCEL文件
+	 * @param alertList
+	 * @return
+	 */
+	public HSSFWorkbook export(List<Alert> alertList) {
+		String[] excelHeader = {"IMEI","IMSI","日期","经度","纬度",
+				"手机型号","APP类型","是否处理","推送状态"};
+		String sheetName = "告警";
+		
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFSheet sheet = wb.createSheet(sheetName);  
+		HSSFRow row = sheet.createRow((int) 0);
+		HSSFCellStyle style = wb.createCellStyle();  
+		// 设置居中样式  
+		style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 水平居中  
+		style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER); // 垂直居中  
+		 
+		HSSFCell cell = null;
+		for (int i = 0; i < excelHeader.length; i++) {    
+			cell = row.createCell(i);    
+	        cell.setCellValue(excelHeader[i]);    
+	        cell.setCellStyle(style);    
+	        sheet.autoSizeColumn(i);    
+	    }
+		 
+		for (int j = 0; j < alertList.size(); j++) {    
+			 
+			row = sheet.createRow((int)j + 1);    
+			Alert alert = alertList.get(j);   
+	       
+	        cell = row.createCell(0);
+	        cell.setCellValue(alert.getImei());  
+	            
+	        cell = row.createCell(1);
+	        cell.setCellValue(alert.getImsi());
+	            
+	        cell = row.createCell(2);
+	        Date time = (Date) alert.getPosTime();
+	        String timeStr = FormatUtil.formatDate(time);
+	        cell.setCellValue(timeStr);
+	            
+	        cell = row.createCell(3);
+	        cell.setCellValue(alert.getLongitudeBaidu());
+	            
+	        cell = row.createCell(4);
+	        cell.setCellValue(alert.getLatitudeBaidu());
+	            
+	        cell = row.createCell(5);
+	        cell.setCellValue(alert.getPhoneType());
+	            
+	        cell = row.createCell(6);
+	        cell.setCellValue(alert.getAppType());
+	            
+	        cell = row.createCell(7);
+	        if(alert.getAlertState()==1){
+	        	cell.setCellValue("已处理");
+	        }else{
+	        	cell.setCellValue("未处理");
+	        }
+	        
+	        cell = row.createCell(8);
+	        if(alert.getPushState()==-1){
+	        	cell.setCellValue("无需推送");
+	        }else if(alert.getPushState()==1){
+	        	cell.setCellValue("已推送");
+	        }else {
+	        	cell.setCellValue("未推送");
+	        }
+       
+	     }    	
+		 return wb;
+	}
+
+}

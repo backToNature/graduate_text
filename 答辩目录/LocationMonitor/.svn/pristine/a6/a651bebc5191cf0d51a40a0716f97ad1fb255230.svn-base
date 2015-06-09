@@ -1,0 +1,53 @@
+package com.swust.kelab.domain;
+
+import java.util.Date;
+
+import com.swust.kelab.util.FormatUtil;
+
+public class LocationSimple {
+	private Integer dataId;
+	private String longitude;
+	private String latitude;
+	private String time;
+	private Date timeDate;
+
+	private Integer area;
+	
+	public Integer getDataId() {
+		return dataId;
+	}
+	public void setDataId(Integer dataId) {
+		this.dataId = dataId;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(Date timeDate) {
+		this.time = FormatUtil.formatDate(timeDate);
+	}
+	public Integer getArea() {
+		return area;
+	}
+	public void setArea(Integer area) {
+		this.area = area;
+	}
+	public Date getTimeDate() {
+		return timeDate;
+	}
+	public void setTimeDate(Date timeDate) {
+		this.timeDate = timeDate;
+	}
+	
+}

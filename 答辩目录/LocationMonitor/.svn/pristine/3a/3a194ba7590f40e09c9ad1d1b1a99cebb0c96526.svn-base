@@ -1,0 +1,37 @@
+package com.swust.kelab.service;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.domain.AlertData;
+import com.swust.kelab.domain.AlertViewData;
+import com.swust.kelab.repos.AlertDAO;
+
+
+@Service("alertService")
+public class AlertService {
+	@Autowired
+	private AlertDAO alertDAO;
+	AlertData alertdata;
+
+	public AlertViewData select(Date time) {
+		String strTime[] = null;
+		 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		Calendar rightTime = Calendar.getInstance();
+		rightTime.setTime(time);
+		sdf.format(rightTime);
+		for(int i=0;i<7;i++){
+			rightTime.add(Calendar.DAY_OF_YEAR, -(i));
+			strTime[i] = sdf.format(rightTime.getTime());
+		}
+		alertdata.setTime(strTime); 
+		
+	
+	 
+		return alertDAO.select(time);
+	}
+}

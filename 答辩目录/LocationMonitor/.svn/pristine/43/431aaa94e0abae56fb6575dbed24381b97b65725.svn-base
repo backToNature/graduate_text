@@ -1,0 +1,24 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+
+    var form = {
+        init: function () {
+            $(function () {
+                $('.search_status').on('click', function () {
+                    var icon = $('.search_status p i');
+                    $('.search_form').slideToggle();
+                    if (icon.hasClass('icon-chevron-up')) {
+                        $('.search_status p span').text('显示查询条件 ');
+                    } else {
+                        $('.search_status p span').text('隐藏查询条件 ');
+                    }
+                    icon.toggleClass('icon-chevron-up');
+                    icon.toggleClass('icon-chevron-down');
+                });
+            });
+        }
+    };
+    module.exports = form;
+});
+

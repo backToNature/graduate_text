@@ -1,0 +1,40 @@
+package com.swust.kelab.domain;
+
+import java.util.Date;
+
+public class AlertData {
+	private String time[];
+	private int series[];
+	private int series_resolved[];
+	private int series_n_resolve[];
+	
+	
+	
+
+
+	public String[] getTime() {
+		return time;
+	}
+	public void setTime(String[] time) {
+		this.time = time;
+	}
+	public int[] getSeries() {
+		return series;
+	}
+	public void setSeries(int[] series) {
+		this.series = series;
+	}
+	public int[] getSeries_resolved() {
+		return series_resolved;
+	}
+	public void setSeries_resolved(int[] series_resolved) {
+		this.series_resolved = series_resolved;
+	}
+	public int[] getSeries_n_resolve() {
+		return series_n_resolve;
+	}
+	public void setSeries_n_resolve(int[] series_n_resolve) {
+		this.series_n_resolve = series_n_resolve;
+	}
+
+}

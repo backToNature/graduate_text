@@ -1,0 +1,81 @@
+package com.swust.kelab.service.engine;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.job.JobParametersExtractor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+public class JobExecutionWindowParametersExtractor implements
+		JobParametersExtractor {
+
+	private JobRepository jobRepository;
+
+	private static Log log = LogFactory.getLog(JobLauncherDetails.class);
+
+	public void setJobRepository(JobRepository jobRepository) {
+		this.jobRepository = jobRepository;
+	}
+	
+	@Override
+	public JobParameters getJobParameters(Job job, StepExecution stepExecution) {
+
+		// Read the last execution from the wrapping job
+		// in order to build Next Execution Window
+		JobExecution lastExecution = (JobExecution) stepExecution
+				.getJobExecution().getExecutionContext()
+				.get("locationEngineJob");
+		;
+
+		if (null != lastExecution) {
+			if (ExitStatus.FAILED.equals(lastExecution.getExitStatus())) {
+				// JobInstance instance = lastExecution.getJobInstance();
+				JobParameters parameters = lastExecution.getJobParameters();
+				log.debug("JobExecutionWindowParametersExtractor.jobParameters="
+						+ parameters);
+				return parameters;
+			}
+		}
+		// We do not have failed execution or have no execution at all we need
+		// to create a new execution window
+		return buildJobParamaters(lastExecution, stepExecution);
+	}
+
+	private JobParameters buildJobParamaters(JobExecution lastExecution,
+			StepExecution stepExecution) {
+		JobParameters jobParameters = null;
+
+		// UNKNOWN and COMPLETED
+		if (lastExecution != null) {
+			int readCount = 0;
+			int cursor = 0;
+			JobParametersBuilder builder = new JobParametersBuilder();
+			StepExecution execution = jobRepository.getLastStepExecution(
+					lastExecution.getJobInstance(), "allStep");
+			readCount = execution.getReadCount();
+			cursor = Integer.parseInt(lastExecution.getJobParameters()
+					.getString(JobLauncherDetails.CURSOR_NAME));
+			cursor += readCount;
+
+			builder.addString(JobLauncherDetails.CURSOR_NAME,
+					String.valueOf(cursor));
+			jobParameters = builder.toJobParameters();
+		}
+		// FIRST_RUN
+		else {
+			jobParameters = stepExecution.getJobExecution().getJobParameters();
+		}
+
+		log.debug("JobExecutionWindowParametersExtractor.jobParameters="
+				+ jobParameters);
+
+		return jobParameters;
+	}
+}

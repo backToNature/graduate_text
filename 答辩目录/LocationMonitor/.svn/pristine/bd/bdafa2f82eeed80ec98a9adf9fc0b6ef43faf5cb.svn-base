@@ -1,0 +1,28 @@
+package com.swust.kelab.service.engine;
+
+import java.util.List;
+
+import org.springframework.batch.core.ItemWriteListener;
+
+
+import com.swust.kelab.domain.Alert;
+
+
+public class SendAlertListener implements ItemWriteListener<Alert> {
+
+	public void beforeWrite(List<? extends Alert> items) {
+		// TODO Auto-generated method stub
+		System.out.println("Send #msg"+items.size());
+	}
+
+	public void afterWrite(List<? extends Alert> items) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onWriteError(Exception exception, List<? extends Alert> items) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<title>告警设置</title>
+<link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all"
+	href="../lib/bootstrap/daterangepicker-bs3.css" />
+<link rel="stylesheet" href="../css/globle.css">
+<link rel="stylesheet" href="../css/alarm.css">
+</head>
+<body>
+	<div class="globle_header map_header_wrapper">
+		<img class="globle_header_logo" src="../img/logo.png"> <span
+			class="globle_header_title">互联网应用作战指挥系统</span>
+		<ul class="globle_header_nav">
+			<!--common.js打印-->
+		</ul>
+	</div>
+	<div class="alarm_body">
+		<div class="alarm_table">
+			<div class="eachButn">
+				<button type="button" class="btn btn-primary">
+					<!--  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> -->
+					添加
+				</button>
+				<button type="button" class="btn btn-danger">删除</button>
+				<input type="text" class="" id="exampleInputAmount"
+					style="border: 1px solid; width: 318px; height: 32px;"
+					placeholder="请输入关键词">
+
+				<button type="submit" class="btn btn-primary">搜索</button>
+			</div>
+			<div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>IMEI</th>
+							<th>IMSI</th>
+							<th>手机号码</th>
+							<th>地区</th>
+							<th>时间</th>
+							<th>告警方式</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>123213213214241</td>
+							<td>756743534546435345</td>
+							<td>13687986566</td>
+							<td>四川省遂宁市</td>
+							<td>2015-3-31 21:57:21</td>
+							<td>短信告警</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>123213213214241</td>
+							<td>756743534546435345</td>
+							<td>13687986566</td>
+							<td>四川省遂宁市</td>
+							<td>2015-3-31 21:57:21</td>
+							<td>短信告警</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="footer">
+		<!-- js打印 -->
+	</div>
+	<script src="../lib/seajs/sea-debug.js"></script>
+	<script>
+		// Set configuration
+		seajs.config({
+			base : '../lib/',
+			alias : {
+				jquery : 'jQuery/jquery.min.js',
+				bootstrap : 'bootstrap/bootstrap.min.js',
+				moment : 'bootstrap/moment.js',
+				daterangepicker : 'bootstrap/daterangepicker.js',
+				underscore : 'underscore/underscore.js',
+				backbone : 'backbone/backbone.js',
+				artTemplate : 'artTemplate/artTemplate.js'
+			}
+		});
+		seajs.use('underscore');
+		// 入口
+		seajs.use('../js/common.js');
+		seajs.use('../js/alarm.js');
+	</script>
+</body>
+</html>

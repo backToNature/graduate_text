@@ -1,0 +1,20 @@
+define(function (require, exports, module){
+    // 加载依赖模块
+    require('jquery');
+    require('daterangepicker');
+    var datetimepicker = {
+        init: function () {
+            $(function () {
+                $('#time').daterangepicker({
+                    timePicker: true,
+                    timePickerIncrement: 30,
+                    format: 'YYYY/MM/DD/ h:mm A'
+                }, function(start, end, label) {
+                    console.log(start.toISOString(), end.toISOString(), label);
+                });
+            });
+        }
+    };
+    module.exports = datetimepicker;
+});
+

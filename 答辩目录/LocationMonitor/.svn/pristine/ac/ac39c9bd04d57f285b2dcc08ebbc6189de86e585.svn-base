@@ -1,0 +1,49 @@
+package com.swust.kelab.web.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import com.swust.kelab.model.CommonQuery;
+import com.swust.kelab.model.ObjModel;
+import com.swust.kelab.model.QueryData;
+import com.swust.kelab.service.LocationQueryService;
+import com.swust.kelab.web.json.JsonAndView;
+
+
+@Controller
+@RequestMapping("/locationQuery")
+public class LocationQueryController {
+	@Autowired
+	private LocationQueryService locationQueryService;
+	
+	/**
+	 * @description 分页查询出位置信息 
+	 * @param objm
+	 * @param query
+	 * @param pageNumber
+	 * @return
+	 */
+	@RequestMapping(value="/queryByPage",method=RequestMethod.GET)
+	public JsonAndView query(ObjModel objm, CommonQuery query, Integer pageNumber){
+		JsonAndView jv = new JsonAndView();
+		try{
+			System.out.println("controller page:"+pageNumber+"\nrecordPerPage:"
+					+query.getRecordPerPage());
+			QueryData result = locationQueryService.queryBypage(objm, query, pageNumber);
+			if(result == null){
+				jv.setRet(false);
+				jv.setErrcode(1);
+				jv.setErrmsg("null");
+			}else{
+				jv.addData("totalPage",result.getTotalPage());
+				jv.addData("totalCount", result.getTotalCount());
+				jv.addData("items", result.getPageData());
+			}
+		}catch(Exception e){
+			
+		}	
+		return jv;	
+	}
+	
+}

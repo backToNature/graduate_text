@@ -1,0 +1,72 @@
+package com.swust.kelab.model;
+
+import java.util.Date;
+import java.util.List;
+import com.swust.kelab.domain.LocationSimple;
+
+public class ObjModel {
+	private Integer objId;
+	private String name;
+	private String IMEI;
+	private String IMSI;
+	private String phone;
+	private String time;
+	private Date dateStart;
+	private Date dateEnd;
+	private List<LocationSimple> items;
+	public Integer getObjId() {
+		return objId;
+	}
+	public void setObjId(Integer objId) {
+		this.objId = objId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getIMEI() {
+		return IMEI;
+	}
+	public void setIMEI(String iMEI) {
+		IMEI = iMEI;
+	}
+	public String getIMSI() {
+		return IMSI;
+	}
+	public void setIMSI(String iMSI) {
+		IMSI = iMSI;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public Date getDateStart() {
+		return dateStart;
+	}
+	public void setDateStart(Date dateStart) {
+		this.dateStart = dateStart;
+	}
+	public Date getDateEnd() {
+		return dateEnd;
+	}
+	public void setDateEnd(Date dateEnd) {
+		this.dateEnd = dateEnd;
+	}
+	public List<LocationSimple> getItems() {
+		return items;
+	}
+	public void setItems(List<LocationSimple> items) {
+		this.items = items;
+	}
+}

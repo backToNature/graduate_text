@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=7" />
+<title>告警管理</title>
+<link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="all"
+	href="../lib/bootstrap/daterangepicker-bs3.css" />
+<link rel="stylesheet" href="../css/globle.css">
+<link rel="stylesheet" href="../css/alarm.css">
+</head>
+<body>
+	<div class="globle_header map_header_wrapper">
+		<img class="globle_header_logo" src="../img/logo.png"> <span
+			class="globle_header_title">互联网应用作战指挥系统</span>
+		<ul class="globle_header_nav">
+			<!--common.js打印-->
+		</ul>
+	</div>
+	<div class="alarm_body">
+		<div class="leftcont">
+			<div class="leftimg">
+				<img class="leftimg" src="../img/left_img.jpg">
+			</div>
+			<div class="menu">
+				<ul>
+					<li><a href="../html/alarm.html">告警设置</a></li>
+					<li><a class="active" href="#">告警展示</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="alarm_table">
+			<!--<form class="form-inline search" >
+			  <div class="form-group ">
+			    <div class="input-group  .input-lg" >
+			      <input type="text" class="form-control" id="exampleInputAmount" placeholder="请输入关键词">
+			    </div>
+			  </div>
+			  <button type="submit" class="btn btn-primary">搜索</button>
+			</form>-->
+			<!-- Single button -->
+			<div class="eachButn">
+				<label class="checkbox-inline"> <input type="checkbox"
+					id="inlineCheckbox1" value="option1"><label>显示</label>
+				</label> <label class="checkbox-inline"> <input type="checkbox"
+					id="inlineCheckbox2" value="option2"><label>推送</label>
+				</label> &nbsp;&nbsp; <label>时间段</label> <input readonly="readonly"
+					id="time"
+					style="border: 1px solid #09e; width: 318px; height: 32px;"
+					type="text" placeholder="请输入时间段"> <input type="button"
+					value="查询" class="btn btn-primary">
+			</div>
+			<div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>时间</th>
+							<th>告警方式</th>
+							<th>告警内容</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>2015-3-31 19:24:24</td>
+							<td>报警</td>
+							<td>原因如下</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>2015-3-31 19:24:24</td>
+							<td>报警2</td>
+							<td>原因</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="footer">
+		<div class="footer_border_left"></div>
+		<img class="footer_border_center" src="../img/bottom_center.png">
+		<div class="footer_border_right"></div>
+		<p>遂宁市公安局 地址:和平西路186 邮政编码:629000</p>
+		<p>推荐使用浏览器IE8（及以上）</p>
+		<p>版权所有 遂宁市公安局</p>
+	</div>
+	<script src="../lib/seajs/sea-debug.js"></script>
+	<script>
+        // Set configuration
+        seajs.config({
+            base: '../lib/',
+            alias: {
+                jquery: 'jQuery/jquery.min.js',
+                bootstrap: 'bootstrap/bootstrap.min.js',
+                moment: 'bootstrap/moment.js',
+                daterangepicker: 'bootstrap/daterangepicker.js',
+                underscore: 'underscore/underscore.js',
+                backbone: 'backbone/backbone.js',
+                artTemplate: 'artTemplate/artTemplate.js'
+            }
+        });
+        seajs.use('underscore');
+        // 入口
+       /* seajs.use('../js/map_query/datetimepicker.js');*/
+        seajs.use('../js/alarm_display.js');
+        seajs.use('../js/common.js');
+    </script>
+</body>
+</html>

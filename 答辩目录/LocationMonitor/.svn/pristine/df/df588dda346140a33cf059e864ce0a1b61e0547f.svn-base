@@ -1,0 +1,77 @@
+package com.swust.kelab.service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
+
+import com.swust.kelab.KMeans.Calculation;
+import com.swust.kelab.KMeans.Kmeans;
+import com.swust.kelab.domain.LocationSimple;
+import com.swust.kelab.service.engine.JobLauncherDetails;
+
+@Service("kmeansservice")
+public class KmeansService {
+	private static Log log = LogFactory.getLog(JobLauncherDetails.class);
+
+	public static List<LocationSimple> KMeans(List<LocationSimple> point,
+			int level) {
+		List<LocationSimple> CluPoint = new ArrayList<LocationSimple>();
+		try {
+			Kmeans<LocationSimple> kmeans = new Kmeans<LocationSimple>(point,
+					level);
+			List<LocationSimple>[] results = kmeans.comput();
+
+			for (int i = 0; i < results.length; i++) { // 是聚类的个数
+				double x = 0;
+				double y = 0;
+				double lng = 0;
+				double lat = 0;
+				double ln1 = 0;
+				double la1 = 0;
+				log.debug("===========类别" + (i + 1) + "================");
+				List<LocationSimple> list = results[i];
+				for (LocationSimple lo : list) { // 求每一个类的平均经纬度 ，ln1 ,la1
+					x = x + Double.parseDouble(lo.getLongitude());
+					y = y + Double.parseDouble(lo.getLatitude());
+				}
+				lng = x / list.size();
+				lat = y / list.size();
+				// 保留4位小数
+				if (list.size() != 0) {
+					BigDecimal ln = new BigDecimal(lng);
+					ln1 = ln.setScale(4, BigDecimal.ROUND_HALF_UP)
+							.doubleValue();
+					BigDecimal la = new BigDecimal(lat);
+					la1 = la.setScale(4, BigDecimal.ROUND_HALF_UP)
+							.doubleValue();
+				}
+				double min = 10000;
+				LocationSimple small = new LocationSimple();
+
+				for (LocationSimple lo : list) { // 判断每一个类中最接近平均值的点作为簇心
+
+					if (Calculation.Distance(ln1, la1,
+							Double.parseDouble(lo.getLongitude()),
+							Double.parseDouble(lo.getLatitude())) < min) {
+						min = Calculation.Distance(ln1, la1,
+								Double.parseDouble(lo.getLongitude()),
+								Double.parseDouble(lo.getLatitude()));
+						small = lo;
+					} else
+						continue;
+				}
+				CluPoint.add(small);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return CluPoint;
+
+	}
+
+}

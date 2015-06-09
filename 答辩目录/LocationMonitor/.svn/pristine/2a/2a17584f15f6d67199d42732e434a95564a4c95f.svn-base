@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>地图展示</title>
+    <link href="../lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="all" href="../lib/bootstrap/daterangepicker-bs3.css" />
+    <link rel="stylesheet" href="../css/globle.css">
+    <link rel="stylesheet" href="../css/map.css">
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=vzvF14yeeF7rU65qPNGjqXXj"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+</head>
+<body>
+    <div class="globle_header map_header_wrapper">
+        <img class="globle_header_logo" src="../img/logo.png">
+        <span class="globle_header_title">互联网应用作战指挥系统</span>
+        <ul class="globle_header_nav">
+        <!--common.js打印-->   
+        </ul>
+    </div>
+    <div class="map_content">
+        <div class="list_content">
+        <div class="search_form">
+            <div class="form-group">
+                <label for="search_IMEI">IMEI</label>
+                <input type="text" class="form-control" id="search_IMEI" placeholder="请输入IMEI">
+            </div>
+            <div class="form-group">
+                <label for="search_IMSI">IMSI</label>
+                <input type="text" class="form-control" id="search_IMSI" placeholder="请输入IMSI">
+            </div>
+            <div class="form-group">
+                <label for="search_time">时间段</label>
+                <input type="text" class="form-control" id="search_time" placeholder="请输入时间段">
+            </div>
+            <div class="form-group">
+                <label for="search_phone">电话</label>
+                <input type="text" class="form-control" id="search_phone" placeholder="请输入手机号">
+            </div>
+            <label class="radio-inline" for="Trajectory_true">
+                <input type="radio" name="Trajectory"  id="Trajectory_true" value="option1"> 展示轨迹
+            </label>
+            <label class="radio-inline" for="Trajectory_false">
+                <input type="radio" name="Trajectory" id="Trajectory_false" value="option1"> 不展示轨迹
+            </label>
+
+            <button style="width: 250px;margin: 10px 0;" class="btn btn-primary">查询</button>
+        </div>
+            <div class="search_status">
+                <p><span>隐藏查询条件 </span><i class="icon-chevron-up" style="font-size: 14px;"></i></p>
+            </div>
+            <div class="map_warning">
+
+                <div class="show_data">
+                    <ul>
+                        <script id="obj_list" type="text/html">
+                            {{each items as value i}}
+                                <li id="{{value.ObjId}}">
+                                <div class="marker marker_red">&nbsp;{{i + 1}}</div>
+                                <p style="color: #00c;">{{value.name}}</p>
+                                <p>地区： 四川省绵阳市涪城区西南科技大学新区</p>
+                                <p>IMEI： {{value.IMEI}}</p>
+                                <p>IMSI： {{value.IMSI}}</p>
+                                <p>电话： {{value.phone}}</p>
+                                <p>时间： {{value.time}}</p>
+                                </li>
+                            {{/each}}
+                        </script>
+                    </ul>
+                </div>
+                <div class="map_pagination">
+                    <span>
+                        <a href="#">&lt上一页</a>
+                    </span>
+                    <input type="text" value="11">
+                    <span>/13</span>
+                    <span>
+                        <a href="#" >下一页&gt</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="map_list" id="myMap"></div>
+    </div>
+    <div class="footer">
+        <div class="footer_border_left"></div>
+        <img class="footer_border_center" src="../img/bottom_center.png">
+        <div class="footer_border_right"></div>
+        <p>遂宁市公安局 地址:和平西路186 邮政编码:629000 </p>
+        <p>推荐使用浏览器IE8（及以上）</p>
+        <p>版权所有 遂宁市公安局</p>
+    </div>
+    <script src="../lib/seajs/sea-debug.js"></script>
+    <script>
+        // Set configuration
+        seajs.config({
+            base: '../lib/',
+            alias: {
+                jquery: 'jQuery/jquery.min.js',
+                bootstrap: 'bootstrap/bootstrap.min.js',
+                moment: 'bootstrap/moment.js',
+                daterangepicker: 'bootstrap/daterangepicker.js',
+                underscore: 'underscore/underscore.js',
+                backbone: 'backbone/backbone.js',
+                artTemplate: 'artTemplate/artTemplate.js'
+            }
+        });
+        seajs.use('underscore');
+
+        // 入口
+        seajs.use('../js/map_query/init.js');
+        seajs.use('../js/common.js');
+    </script>
+</body>
+</html>

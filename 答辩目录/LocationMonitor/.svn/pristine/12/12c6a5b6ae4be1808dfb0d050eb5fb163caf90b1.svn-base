@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="locationQuery">
+<select id="selectObjects" parameterType="com.swust.kelab.model.ObjModel" resultType="com.swust.kelab.model.ObjModel">
+select ObjectName as name,
+ObjectIMEI as IMEI,
+ObjectIMSI as IMSI,
+ObjectPhone as phone
+from objectinfo
+<where>
+1 = 1
+<if test="IMEI!=null and IMEI!=''">
+and ObjectIMEI=#{IMEI}
+</if>
+<if test="IMSI!=null and IMSI!=''">
+and ObjectIMSI=#{IMSI}
+</if>
+<if test="phone!=null and phone!=''">
+and ObjectPhone=#{phone}
+</if>
+</where>
+</select>
+
+<select id="selectLocation" parameterType="com.swust.kelab.model.ObjModel" resultType="com.swust.kelab.domain.LocationSimple">
+select LongitudeBaidu as longitude,
+LatitudeBaidu as latitude,
+PosTime as timeDate,
+AreaID as area
+from location 
+<where>
+1 = 1
+<if test="IMEI!=null and IMEI!=''">
+and IMEIID = (select IMEIID from imei where IMEI=#{IMEI})
+</if>
+<if test="IMSI!=null and IMSI!=''">
+and IMSIID = (select IMSIID from imsi where IMSI=#{IMSI})
+</if>
+<if test="dateStart!=null and dateEnd!=null">
+and PosTime>=#{dateStart} 
+and PosTime<![CDATA[<=]]>#{dateEnd}
+</if>
+</where>
+</select>
+</mapper>

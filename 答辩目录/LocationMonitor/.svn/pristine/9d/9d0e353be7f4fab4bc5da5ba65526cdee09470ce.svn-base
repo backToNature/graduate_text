@@ -1,0 +1,51 @@
+package com.swust.kelab.repos;
+
+import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import com.swust.kelab.domain.Location;
+
+public class LocationRowMapper implements RowMapper<Location> {
+
+	public static final String LOCATIONID_COLUMN = "LocationID";
+	public static final String IMEI_COLUMN = "IMEI";
+	public static final String IMSI_COLUMN = "IMSI";
+	public static final String POSTIME_COLUMN = "PosTime";
+	public static final String LONGTITUDE_COLUMN = "Longitude";
+	public static final String LATITUDE_COLUMN = "Latitude";
+	public static final String LOCTYPE_COLUMN = "LocType";
+	public static final String TRANSFERFLAG_COLUMN = "TransferFlag";
+	public static final String LONGTITUDEBAIDU_COLUMN = "LongitudeBaidu";
+	public static final String LATITUDEBAIDU_COLUMN = "LatitudeBaidu";
+	public static final String SRCIP_COLUMN = "SrcIP";
+	public static final String AREAID_COLUMN = "AreaID";
+	public static final String DSTIP_COLUMN = "DstIP";
+	public static final String PHONETYPE_COLUMN = "PhoneType";
+	public static final String APPTYPE_COLUMN = "AppType";
+
+	@Override
+	public Location mapRow(ResultSet rs, int rowNum) throws SQLException {
+		Location location = new Location();
+
+		location.setLocationID(BigInteger.valueOf(rs.getLong(LOCATIONID_COLUMN)));
+		location.setImei(rs.getString(IMEI_COLUMN));
+		location.setImsi(rs.getString(IMSI_COLUMN));
+		location.setPosTime(rs.getDate(POSTIME_COLUMN));
+		location.setLongitude(rs.getString(LONGTITUDE_COLUMN));
+		location.setLatitude(rs.getString(LATITUDE_COLUMN));
+		location.setLocType(rs.getInt(LOCTYPE_COLUMN));
+		location.setTransferFlag(rs.getInt(TRANSFERFLAG_COLUMN));
+		location.setLongitudeBaidu(rs.getString(LONGTITUDEBAIDU_COLUMN));
+		location.setLatitudeBaidu(rs.getString(LATITUDEBAIDU_COLUMN));
+		location.setSrcIP(rs.getString(SRCIP_COLUMN));
+		location.setAreaID(rs.getInt(AREAID_COLUMN));
+		location.setDstIP(rs.getString(DSTIP_COLUMN));
+		location.setPhoneType(rs.getString(PHONETYPE_COLUMN));
+		location.setAppType(rs.getString(APPTYPE_COLUMN));
+
+		return location;
+	}
+}

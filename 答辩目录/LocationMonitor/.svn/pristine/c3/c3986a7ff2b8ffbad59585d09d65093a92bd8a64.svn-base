@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="user">
+<insert id="insertOne" parameterType="com.swust.kelab.domain.User">
+insert into user(name,num) values (#{name},#{deviceNum})
+</insert>
+
+<select id="selectList" parameterType="Map" resultType="com.swust.kelab.domain.User">
+select id as id,
+     name as name
+  from
+  user
+  where
+  num=#{num}
+  and 
+  name like '%#{name}#'
+</select>
+
+<select id="selectCount" parameterType="Map">
+select count(*)
+from
+user
+where
+time between #{startTime} and #{endTinname}
+and name=#{name}
+</select>
+<select id="selectByPage"  parameterType="Map" resultType="com.swust.kelab.domain.User">
+select id as id,
+     name as name
+from
+user
+where
+time between #{startTime} and #{endTinname}
+and name=#{name}
+limit #{statIndex},#{maxCount}
+</select>
+</mapper>
